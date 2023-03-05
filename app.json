@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "flymon-mobile",
-    "slug": "flymon-mobile",
+    "name": "flymon",
+    "slug": "flymon",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +15,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.wetterkrank.flymon"
     },
     "android": {
       "adaptiveIcon": {
@@ -25,6 +26,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "891bffac-aa8a-4b57-b358-0225352a1787"
+      }
     }
   }
 }
