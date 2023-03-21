@@ -1,4 +1,4 @@
-import type { Location } from "./types";
+import type { ApiResponse } from "./types";
 import sanitizeLocation from "./helpers";
 import { KIWI_BASE_URL, KIWI_API_KEY } from "@env";
 
@@ -16,7 +16,7 @@ export const fetchLocations = async (term: string) => {
     active_only: "true",
   }).toString();
   const response = await tequilaFetch(`/locations/query?${query}`);
-  const data = await response.json();
+  const data: ApiResponse = await response.json();
 
   return data.locations.map((location) =>  sanitizeLocation(location));
 };

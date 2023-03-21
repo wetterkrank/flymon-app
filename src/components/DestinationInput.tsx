@@ -8,8 +8,8 @@ export const DestinationInput = memo(() => {
   const [remoteDataSet, setRemoteDataSet] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
 
-  const getSuggestions = useCallback(async (query) => {
-    if (typeof query !== "string" || query.length < 3) {
+  const getSuggestions = useCallback(async (query: string) => {
+    if (query.length < 3) {
       setRemoteDataSet(null);
       return;
     }

@@ -29,8 +29,8 @@ type ApiLocationArea = {
 };
 
 type Coordinates = {
-  readonly lat: number;
-  readonly lng: number;
+  readonly lat: number | undefined;
+  readonly lng: number | undefined;
 };
 
 export type ApiLocation = {
