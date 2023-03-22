@@ -17,26 +17,37 @@ export default function SubscriptionScreen({
   navigation,
 }: SubscriptionScreenNavigationProps) {
   // const [selectedItem, setSelectedItem] = useState({});
+  const [dateToSelect, setDateToSelect] = useState<"departure" | "return" | null>(null);
   const [relativeDatesEnabled, setRelativeDatesEnabled] = useState(false);
   const toggleRelativeDates = (value: boolean) =>
     setRelativeDatesEnabled(value);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
-  const showDatePicker = () => {
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+    setDateToSelect(null);
+  };
+
+  const handleConfirm = (date: Date) => {
+    const dateType = dateToSelect === "departure" ? "Earliest departure" : "Latest return";
+    console.log(`${dateType} date: ${date}}`);
+    hideDatePicker();
+    setDateToSelect(null);
+  };
+
+  const selectDepartureDate = () => {
+    setDateToSelect("departure");
     setDatePickerVisibility(true);
   };
 
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false);
-  };
-
-  const handleConfirm = (date) => {
-    console.warn("A date has been picked: ", date);
-    hideDatePicker();
+  const selectReturnDate = () => {
+    setDateToSelect("return");
+    setDatePickerVisibility(true);
   };
 
   return (
     <View>
+      {/* Pass props to the input */}
       <DestinationInput />
 
       <Switch
@@ -47,8 +58,8 @@ export default function SubscriptionScreen({
         value={relativeDatesEnabled}
       />
 
-      <Text>Earliest departure date</Text>
-      <Button title="Show Date Picker" onPress={showDatePicker} />
+      <Button title="Earliest departure date" onPress={selectDepartureDate} />
+      <Button title="Latest return date" onPress={selectReturnDate} />
 
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
@@ -56,6 +67,7 @@ export default function SubscriptionScreen({
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
       />
+
     </View>
   );
 }
