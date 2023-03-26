@@ -1,8 +1,9 @@
 import { useState } from "react";
-
 import { Button, StyleSheet, Switch, Text, View } from "react-native";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import DatePickerModal from "react-native-modal-datetime-picker";
+
 import { DestinationInput } from "../components/DestinationInput";
+import { DaysSelector } from "../components/DaysSelector";
 
 import { SubscriptionScreenNavigationProps } from "../navigation/types";
 
@@ -13,36 +14,72 @@ import { SubscriptionScreenNavigationProps } from "../navigation/types";
 // Max stops
 // Inform me when the price drops below X / by X%
 
+type TravelDates = {
+  outbound: { value: Date | null };
+  inbound: { value: Date | null };
+};
+
+const defaultDates: TravelDates = {
+  outbound: { value: null },
+  inbound: { value: null },
+};
+
 export default function SubscriptionScreen({
   navigation,
 }: SubscriptionScreenNavigationProps) {
-  // const [selectedItem, setSelectedItem] = useState({});
-  const [dateToSelect, setDateToSelect] = useState<"departure" | "return" | null>(null);
+  // Subscription parameters
+  const [destination, setDestination] = useState({});
+  const [travelDates, setTravelDates] = useState<TravelDates>(defaultDates);
+  const [daysAtDestination, setDaysAtDestination] = useState<number[]>([7, 14]);
+  const [maxStops, setMaxStops] = useState<number>(0);
+
+  // Travel dates selection
+  // TODO: use TravelDates keys:
+  const [dateSelectMode, setDateSelectMode] = useState<"outbound" | "inbound">(
+    "outbound"
+  );
   const [relativeDatesEnabled, setRelativeDatesEnabled] = useState(false);
   const toggleRelativeDates = (value: boolean) =>
     setRelativeDatesEnabled(value);
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [isDatePickerVisible, setDatePickerVisibile] = useState(false);
 
   const hideDatePicker = () => {
-    setDatePickerVisibility(false);
-    setDateToSelect(null);
+    setDatePickerVisibile(false);
+    setDateSelectMode("outbound");
   };
 
-  const handleConfirm = (date: Date) => {
-    const dateType = dateToSelect === "departure" ? "Earliest departure" : "Latest return";
-    console.log(`${dateType} date: ${date}}`);
+  const handleSelectedDate = (date: Date) => {
+    setTravelDates((prevDates) => {
+      const dates = prevDates;
+      dates[dateSelectMode].value = date;
+      return dates;
+    });
     hideDatePicker();
-    setDateToSelect(null);
+    setDateSelectMode("outbound");
   };
 
   const selectDepartureDate = () => {
-    setDateToSelect("departure");
-    setDatePickerVisibility(true);
+    setDateSelectMode("outbound");
+    setDatePickerVisibile(true);
   };
 
   const selectReturnDate = () => {
-    setDateToSelect("return");
-    setDatePickerVisibility(true);
+    setDateSelectMode("inbound");
+    setDatePickerVisibile(true);
+  };
+
+  // Days at destination selector
+  const [isDaysSelectorVisible, setDaysSelectorVisible] = useState(false);
+  const hideDaysSelector = () => setDaysSelectorVisible(false);
+  const handleSelectedDays = (days: number[]) => {
+    setDaysAtDestination(days);
+    hideDaysSelector();
+  };
+
+  // Confirm subscription
+  const confirmSubscription = () => {
+    // Create / update subscription on server
+    navigation.navigate("Home");
   };
 
   return (
@@ -50,26 +87,47 @@ export default function SubscriptionScreen({
       {/* Pass props to the input */}
       <DestinationInput />
 
-      <Switch
-        trackColor={{ false: "#767577", true: "#81b0ff" }}
-        thumbColor={relativeDatesEnabled ? "#f5dd4b" : "#f4f3f4"}
-        ios_backgroundColor="#3e3e3e"
-        onValueChange={toggleRelativeDates}
-        value={relativeDatesEnabled}
+      <View style={styles.relativeDates}>
+        <Switch
+          trackColor={{ false: "#767577", true: "#81b0ff" }}
+          thumbColor={relativeDatesEnabled ? "#f5dd4b" : "#f4f3f4"}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={toggleRelativeDates}
+          value={relativeDatesEnabled}
+        />
+        <Text>"Use relative dates?"</Text>
+      </View>
+
+      <Button title="Earliest departure" onPress={selectDepartureDate} />
+      <Text>{`Selected: ${travelDates.outbound.value}`}</Text>
+
+      <Button title="Latest return" onPress={selectReturnDate} />
+      <Text>{`Selected: ${travelDates.inbound.value}`}</Text>
+
+      <Button
+        title="Days at destination"
+        onPress={() => setDaysSelectorVisible(true)}
       />
 
-      <Button title="Earliest departure date" onPress={selectDepartureDate} />
-      <Button title="Latest return date" onPress={selectReturnDate} />
+      <Button title="Confirm" onPress={confirmSubscription} />
 
-      <DateTimePickerModal
+      <DatePickerModal
         isVisible={isDatePickerVisible}
         mode="date"
-        onConfirm={handleConfirm}
+        onConfirm={handleSelectedDate}
         onCancel={hideDatePicker}
       />
 
+      <DaysSelector
+        isVisible={isDaysSelectorVisible}
+        values={daysAtDestination}
+        onConfirm={handleSelectedDays}
+        onCancel={hideDaysSelector}
+      />
     </View>
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  relativeDates: {},
+});

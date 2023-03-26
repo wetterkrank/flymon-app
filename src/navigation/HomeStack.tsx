@@ -12,7 +12,7 @@ const HomeStackNavigator = () => {
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen name="Home" component={HomeScreen} />
-      <HomeStack.Screen name="Subscription" component={SubscriptionScreen} />
+      <HomeStack.Screen name="Subscription" component={SubscriptionScreen} options={{gestureEnabled: false}} />
     </HomeStack.Navigator>
   );
 };
