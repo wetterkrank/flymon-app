@@ -4,6 +4,7 @@ import DatePickerModal from "react-native-modal-datetime-picker";
 
 import { DestinationInput } from "../components/DestinationInput";
 import { DaysSelector } from "../components/DaysSelector";
+import { StopsSelector } from "../components/StopsSelector";
 
 import { SubscriptionScreenNavigationProps } from "../navigation/types";
 
@@ -76,6 +77,14 @@ export default function SubscriptionScreen({
     hideDaysSelector();
   };
 
+  // Max stops selector
+  const [isStopsSelectorVisible, setStopsSelectorVisible] = useState(false);
+  const hideStopsSelector = () => setStopsSelectorVisible(false);
+  const handleSelectedStops = (maxStops: number) => {
+    setMaxStops(maxStops);
+    hideStopsSelector();
+  };
+
   // Confirm subscription
   const confirmSubscription = () => {
     // Create / update subscription on server
@@ -95,7 +104,7 @@ export default function SubscriptionScreen({
           onValueChange={toggleRelativeDates}
           value={relativeDatesEnabled}
         />
-        <Text>"Use relative dates?"</Text>
+        <Text>Use relative dates?</Text>
       </View>
 
       <Button title="Earliest departure" onPress={selectDepartureDate} />
@@ -109,7 +118,25 @@ export default function SubscriptionScreen({
         onPress={() => setDaysSelectorVisible(true)}
       />
 
+      <Button
+        title="Max stops"
+        onPress={() => setStopsSelectorVisible(true)}
+      />
+
       <Button title="Confirm" onPress={confirmSubscription} />
+
+      <DaysSelector
+        isVisible={isDaysSelectorVisible}
+        values={daysAtDestination}
+        onConfirm={handleSelectedDays}
+        onCancel={hideDaysSelector}
+      />
+
+      <StopsSelector
+        isVisible={isStopsSelectorVisible}
+        onConfirm={handleSelectedStops}
+        onCancel={hideStopsSelector}
+      />
 
       <DatePickerModal
         isVisible={isDatePickerVisible}
@@ -118,12 +145,6 @@ export default function SubscriptionScreen({
         onCancel={hideDatePicker}
       />
 
-      <DaysSelector
-        isVisible={isDaysSelectorVisible}
-        values={daysAtDestination}
-        onConfirm={handleSelectedDays}
-        onCancel={hideDaysSelector}
-      />
     </View>
   );
 }
