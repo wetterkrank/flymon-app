@@ -7,6 +7,7 @@ import { DaysSelector } from "../components/DaysSelector";
 import { StopsSelector } from "../components/StopsSelector";
 
 import { SubscriptionScreenNavigationProps } from "../navigation/types";
+import { formattedDate } from "../helpers";
 
 // Subscription parameters:
 // Destination (autocomplete)
@@ -108,20 +109,22 @@ export default function SubscriptionScreen({
       </View>
 
       <Button title="Earliest departure" onPress={selectDepartureDate} />
-      <Text>{`Selected: ${travelDates.outbound.value}`}</Text>
+      <Text>{`Selected: ${formattedDate(travelDates.outbound.value)}`}</Text>
 
       <Button title="Latest return" onPress={selectReturnDate} />
-      <Text>{`Selected: ${travelDates.inbound.value}`}</Text>
+      <Text>{`Selected: ${formattedDate(travelDates.inbound.value)}`}</Text>
 
       <Button
         title="Days at destination"
         onPress={() => setDaysSelectorVisible(true)}
       />
+      <Text>{`Days at destination: ${daysAtDestination[0]} - ${daysAtDestination[1]}`}</Text>
 
       <Button
         title="Max stops"
         onPress={() => setStopsSelectorVisible(true)}
       />
+      <Text>{`Max stops: ${maxStops}`}</Text>
 
       <Button title="Confirm" onPress={confirmSubscription} />
 
