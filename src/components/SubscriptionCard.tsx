@@ -10,7 +10,7 @@ export const SubscriptionCard = ({data}: SubscriptionCardProps) => {
   console.log(data.search.lastResult);
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{data.search.destination}</Text>
+      <Text style={styles.item}>{data.search.destination}</Text>
     </View>
   );
 };
@@ -18,7 +18,7 @@ export const SubscriptionCard = ({data}: SubscriptionCardProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#ccc',
     alignItems: 'center',
     justifyContent: 'center',
     margin: 10,
@@ -26,9 +26,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#000',
+    height: 44
   },
-  title: {
-    flex: 1,
+  item: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#000',

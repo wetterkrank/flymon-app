@@ -1,12 +1,14 @@
-import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import { CacheProvider } from '@rest-hooks/react';
 
-import RootNavigator from './src/navigation';
+import HomeStackNavigator from './src/navigation/HomeStack';
 
 export default function App() {
   return (
-    <CacheProvider>
-      <RootNavigator />
-    </CacheProvider>
+    <NavigationContainer>
+      <CacheProvider>
+        <HomeStackNavigator />
+      </CacheProvider>
+    </NavigationContainer>
   );
 };

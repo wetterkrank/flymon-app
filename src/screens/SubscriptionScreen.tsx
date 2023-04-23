@@ -8,13 +8,18 @@ import { StopsSelector } from "../components/StopsSelector";
 
 import { SubscriptionScreenNavigationProps } from "../navigation/types";
 import { formattedDate } from "../helpers";
+import { Subscription } from "../api/subscriptions/subscription";
 
-// Subscription parameters:
-// Destination (autocomplete)
-// Earliest departure date, latest return date (absolute or relative, like "tomorrow")
-// Min/max days at destination
-// Max stops
-// Inform me when the price drops below X / by X%
+// Search parameters:
+// origin (config), destination (autocomplete)
+// earliestDeparture date, latestDepartureDate (absolute or relative, like "tomorrow")
+// min/max daysAtDestination
+// maxStopovers (0, 1, 2)
+// notification settings ("inform me when the price drops below X")
+
+type SubscriptionScreenProps = {
+  subscription: Subscription | null;
+} & SubscriptionScreenNavigationProps;
 
 type TravelDates = {
   earliest: { value: Date | null };
@@ -27,19 +32,24 @@ const defaultDates: TravelDates = {
 };
 
 export default function SubscriptionScreen({
+  subscription,
   navigation,
-}: SubscriptionScreenNavigationProps) {
+}: SubscriptionScreenProps) {
+  subscription ||= new Subscription(); // Should happen in the parent component?
+  const search = subscription.search;
+
   // Subscription parameters
-  const [destination, setDestination] = useState({});
+  const [destination, setDestination] = useState(search.destination);
   const [travelDates, setTravelDates] = useState<TravelDates>(defaultDates);
-  const [daysAtDestination, setDaysAtDestination] = useState<number[]>([7, 14]);
-  const [maxStops, setMaxStops] = useState<number>(0);
+  const [daysAtDestination, setDaysAtDestination] = useState<number[]>([
+    search.minNightsAtDestination,
+    search.maxNightsAtDestination,
+  ]);
+  const [maxStops, setMaxStops] = useState<number>(search.maxStopovers);
 
   // Travel dates selection
-  // TODO: use TravelDates keys:
-  const [dateSelectMode, setDateSelectMode] = useState<"earliest" | "latest">(
-    "earliest"
-  );
+  const [dateSelectMode, setDateSelectMode] =
+    useState<keyof TravelDates>("earliest");
   const [relativeDatesEnabled, setRelativeDatesEnabled] = useState(false);
   const toggleRelativeDates = (value: boolean) =>
     setRelativeDatesEnabled(value);
@@ -120,10 +130,7 @@ export default function SubscriptionScreen({
       />
       <Text>{`Days at destination: ${daysAtDestination[0]} - ${daysAtDestination[1]}`}</Text>
 
-      <Button
-        title="Max stops"
-        onPress={() => setStopsSelectorVisible(true)}
-      />
+      <Button title="Max stops" onPress={() => setStopsSelectorVisible(true)} />
       <Text>{`Max stops: ${maxStops}`}</Text>
 
       <Button title="Confirm" onPress={confirmSubscription} />
@@ -147,7 +154,6 @@ export default function SubscriptionScreen({
         onConfirm={handleSelectedDate}
         onCancel={hideDatePicker}
       />
-
     </View>
   );
 }

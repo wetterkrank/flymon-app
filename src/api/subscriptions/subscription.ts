@@ -1,7 +1,7 @@
 import { createResource, Entity } from '@rest-hooks/rest';
 
-class Result extends Entity {
-  id = '';
+export class Result extends Entity {
+  id: string | undefined = undefined;
   price = 0;
   currency = '';
   origin = '';
@@ -13,8 +13,8 @@ class Result extends Entity {
   pk() { return this.id; }
 }
 
-class Search extends Entity {
-  id = '';
+export class Search extends Entity {
+  id: string | undefined = undefined;
   origin = '';
   destination = '';
   earliestDepartureDate = '';
@@ -28,7 +28,7 @@ class Search extends Entity {
 }
 
 export class Subscription extends Entity {
-  id = '';
+  id: string | undefined = undefined;
   search = Search.fromJS({});
 
   pk() { return this.id; }
