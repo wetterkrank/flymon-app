@@ -5,13 +5,13 @@ type TravelDate =
     }
   | { type: "absolute"; value: Date };
 
-type Subscription = {
-  id: string;
-  from: string;
-  to: string;
-  outboundDate: TravelDate;
-  inboundDate: TravelDate | null;
-  minDaysAtDestination: number;
-  maxDaysAtDestination: number;
-  maxStops: number;
-};
+// type Subscription = {
+//   id: string;
+//   from: string;
+//   to: string;
+//   earliestOutboundDate: TravelDate;
+//   latestOutboundDate: TravelDate;
+//   minDaysAtDestination: number;
+//   maxDaysAtDestination: number;
+//   maxStops: number;
+// };

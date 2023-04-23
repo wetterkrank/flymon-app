@@ -17,13 +17,13 @@ import { formattedDate } from "../helpers";
 // Inform me when the price drops below X / by X%
 
 type TravelDates = {
-  outbound: { value: Date | null };
-  inbound: { value: Date | null };
+  earliest: { value: Date | null };
+  latest: { value: Date | null };
 };
 
 const defaultDates: TravelDates = {
-  outbound: { value: null },
-  inbound: { value: null },
+  earliest: { value: null },
+  latest: { value: null },
 };
 
 export default function SubscriptionScreen({
@@ -37,8 +37,8 @@ export default function SubscriptionScreen({
 
   // Travel dates selection
   // TODO: use TravelDates keys:
-  const [dateSelectMode, setDateSelectMode] = useState<"outbound" | "inbound">(
-    "outbound"
+  const [dateSelectMode, setDateSelectMode] = useState<"earliest" | "latest">(
+    "earliest"
   );
   const [relativeDatesEnabled, setRelativeDatesEnabled] = useState(false);
   const toggleRelativeDates = (value: boolean) =>
@@ -47,7 +47,7 @@ export default function SubscriptionScreen({
 
   const hideDatePicker = () => {
     setDatePickerVisibile(false);
-    setDateSelectMode("outbound");
+    setDateSelectMode("earliest");
   };
 
   const handleSelectedDate = (date: Date) => {
@@ -57,16 +57,16 @@ export default function SubscriptionScreen({
       return dates;
     });
     hideDatePicker();
-    setDateSelectMode("outbound");
+    setDateSelectMode("earliest");
   };
 
   const selectDepartureDate = () => {
-    setDateSelectMode("outbound");
+    setDateSelectMode("earliest");
     setDatePickerVisibile(true);
   };
 
   const selectReturnDate = () => {
-    setDateSelectMode("inbound");
+    setDateSelectMode("latest");
     setDatePickerVisibile(true);
   };
 
@@ -109,10 +109,10 @@ export default function SubscriptionScreen({
       </View>
 
       <Button title="Earliest departure" onPress={selectDepartureDate} />
-      <Text>{`Selected: ${formattedDate(travelDates.outbound.value)}`}</Text>
+      <Text>{`Selected: ${formattedDate(travelDates.earliest.value)}`}</Text>
 
-      <Button title="Latest return" onPress={selectReturnDate} />
-      <Text>{`Selected: ${formattedDate(travelDates.inbound.value)}`}</Text>
+      <Button title="Latest departure" onPress={selectReturnDate} />
+      <Text>{`Selected: ${formattedDate(travelDates.latest.value)}`}</Text>
 
       <Button
         title="Days at destination"

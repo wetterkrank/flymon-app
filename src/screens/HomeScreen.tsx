@@ -1,14 +1,17 @@
 import { Button, StyleSheet, Text, View } from "react-native";
 
 import { HomeScreenNavigationProps } from '../navigation/types';
+import { SubscriptionsList } from "../components/SubscriptionsList";
+import { useSuspense } from "@rest-hooks/react";
+import { SubscriptionResource } from "../api/subscriptions/subscription";
 
 export default function HomeScreen({navigation}: HomeScreenNavigationProps) {
+  const data = useSuspense(SubscriptionResource.getList);
+  console.log(data);
   return (
     <View style={styles.container}>
       <View style={styles.destinations}>
-        {/* <View style={styles.destinationCard}>
-          <Text>Destination 1</Text>
-        </View> */}
+        <SubscriptionsList data={data}/>
       </View>
       <View style={styles.buttonContainer}>
         <Button
@@ -22,7 +25,7 @@ export default function HomeScreen({navigation}: HomeScreenNavigationProps) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: "10%",
+    // paddingVertical: "10%",
     flex: 1,
     backgroundColor: "#fff",
     justifyContent: "space-between",
