@@ -1,60 +1,103 @@
-import { createResource, Entity } from '@rest-hooks/rest';
+import useSWR from "swr";
+import { z } from "zod";
 
-export class Result extends Entity {
-  id: string | undefined = undefined;
-  price = 0;
-  currency = '';
-  origin = '';
-  destination = '';
-  departureDate = '';
-  returnDate = '';
-  deeplink = '';
+const BASE_URL = "http://192.168.1.128:3000";
 
-  pk() { return this.id; }
-}
-
-export class Search extends Entity {
-  id: string | undefined = undefined;
-  origin = '';
-  destination = '';
-  earliestDepartureDate = '';
-  latestDepartureDate = '';
-  minNightsAtDestination = 1;
-  maxNightsAtDestination = 1;
-  maxStopovers = 0;
-  lastResult: Result | null = Result.fromJS({});
-
-  pk() { return this.id; }
-}
-
-export class Subscription extends Entity {
-  id: string | undefined = undefined;
-  search = Search.fromJS({});
-
-  pk() { return this.id; }
-}
-
-export const SubscriptionResource = createResource({
-  urlPrefix: 'http://127.0.0.1:3000',
-  path: '/users/1/subscriptions/:id',
-  schema: Subscription,
+const resultSchema = z.object({
+  id: z.number().optional(),
+  price: z.number(),
+  currency: z.string(),
+  origin: z.string(),
+  destination: z.string(),
+  departureDate: z.string(),
+  returnDate: z.string(),
+  deeplink: z.string(),
 });
 
-// import { CreateSubscriptionApiRequest } from "./types";
-// import { formattedApiDate } from "../../helpers";
+const searchSchema = z.object({
+  id: z.number().optional(),
+  origin: z.string(),
+  destination: z.string(),
+  earliestDepartureDate: z.string(),
+  latestDepartureDate: z.string(),
+  minNightsAtDestination: z.number(),
+  maxNightsAtDestination: z.number(),
+  maxStopovers: z.number(),
+  lastResult: z.nullable(resultSchema),
+});
 
-// const createSubscription = async (data: Subscription) => {
+const subscriptionSchema = z.object({
+  id: z.number().optional(),
+  search: searchSchema,
+});
 
-// const request: CreateSubscriptionApiRequest = {
-//     origin: data.from,
-//     destination: data.to,
-//     earliestDepartureDate: formattedApiDate(data.earliestOutboundDate.value),
-//     latestDepartureDate: formattedApiDate(data.latestOutboundDate.value),
-//     minNightsAtDestination: data.minDaysAtDestination,
-//     maxNightsAtDestination: data.maxDaysAtDestination,
-//     maxStopovers: data.maxStops
-//   }
+const subscriptionListSchema = z.array(subscriptionSchema);
 
-//   const response = await fetch("https://localhost:3000", { method: "POST" });
-//   return response;
-// };
+export type Result = z.infer<typeof resultSchema>;
+export type Search = z.infer<typeof searchSchema>;
+export type Subscription = z.infer<typeof subscriptionSchema>;
+export type Subscriptions = z.infer<typeof subscriptionListSchema>;
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
+
+export const useSubscriptions = (userId: string) => {
+  const { data, error, isLoading } = useSWR(
+    `${BASE_URL}/users/${userId}/subscriptions`,
+    fetcher
+  );
+  console.log(data);
+  console.log(error?.message);
+
+  // TODO: probably better to return undefined so we can check the data and show the fallback
+  const parsedData = data ? subscriptionListSchema.parse(data) : [];
+
+  return {
+    data: parsedData,
+    isLoading,
+    error: error,
+  };
+};
+
+export const useSubscription = (userId: string, subscriptionId: string | null) => {
+  if (!subscriptionId) {
+    return {
+      data: newSubscription(userId),
+      isLoading: false,
+      error: undefined,
+    };
+  }
+
+  const { data, error, isLoading } = useSWR(
+    `${BASE_URL}/users/${userId}/subscriptions/${subscriptionId}`,
+    fetcher
+  );
+  console.log(data);
+  console.log(error?.message);
+
+  const parsedData = data ? subscriptionSchema.parse(data) : undefined;
+  return {
+    data: parsedData,
+    isLoading,
+    error: error
+  }
+};
+
+// TODO: can we generate this from the schema?
+
+export const newSearch = () => ({
+  id: undefined,
+  origin: "",
+  destination: "",
+  earliestDepartureDate: "",
+  latestDepartureDate: "",
+  minNightsAtDestination: 1,
+  maxNightsAtDestination: 1,
+  maxStopovers: 0,
+  lastResult: null,
+});
+
+export const newSubscription = (userId: string) => ({
+  id: undefined,
+  userId: userId,
+  search: newSearch(),
+});

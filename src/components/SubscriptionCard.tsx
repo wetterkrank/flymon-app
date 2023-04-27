@@ -6,8 +6,6 @@ export type SubscriptionCardProps = {
 };
 
 export const SubscriptionCard = ({data}: SubscriptionCardProps) => {
-  console.log(data.search.destination);
-  console.log(data.search.lastResult);
   return (
     <View style={styles.container}>
       <Text style={styles.item}>{data.search.destination}</Text>

@@ -1,22 +1,24 @@
 import { Button, StyleSheet, Text, View } from "react-native";
 
-import { HomeScreenNavigationProps } from '../navigation/types';
+import { HomeScreenNavigationProps } from "../navigation/types";
 import { SubscriptionsList } from "../components/SubscriptionsList";
-import { useSuspense } from "@rest-hooks/react";
-import { SubscriptionResource } from "../api/subscriptions/subscription";
+import { useSubscriptions } from "../api/subscriptions/subscription";
 
-export default function HomeScreen({navigation}: HomeScreenNavigationProps) {
-  const data = useSuspense(SubscriptionResource.getList);
+export default function HomeScreen({ navigation }: HomeScreenNavigationProps) {
+  const { data, isLoading, error } = useSubscriptions("1");
   console.log(data);
+
   return (
     <View style={styles.container}>
       <View style={styles.destinations}>
-        <SubscriptionsList data={data}/>
+        <SubscriptionsList data={data} />
       </View>
       <View style={styles.buttonContainer}>
         <Button
           title="Add Destination"
-          onPress={() => navigation.navigate("Subscription")}
+          onPress={() => {
+            navigation.navigate("Subscription", { subscriptionId: null });
+          }}
         />
       </View>
     </View>
@@ -25,7 +27,6 @@ export default function HomeScreen({navigation}: HomeScreenNavigationProps) {
 
 const styles = StyleSheet.create({
   container: {
-    // paddingVertical: "10%",
     flex: 1,
     backgroundColor: "#fff",
     justifyContent: "space-between",

@@ -8,7 +8,7 @@ import { StopsSelector } from "../components/StopsSelector";
 
 import { SubscriptionScreenNavigationProps } from "../navigation/types";
 import { formattedDate } from "../helpers";
-import { Subscription } from "../api/subscriptions/subscription";
+import { useSubscription, newSubscription } from "../api/subscriptions/subscription";
 
 // Search parameters:
 // origin (config), destination (autocomplete)
@@ -16,10 +16,6 @@ import { Subscription } from "../api/subscriptions/subscription";
 // min/max daysAtDestination
 // maxStopovers (0, 1, 2)
 // notification settings ("inform me when the price drops below X")
-
-type SubscriptionScreenProps = {
-  subscription: Subscription | null;
-} & SubscriptionScreenNavigationProps;
 
 type TravelDates = {
   earliest: { value: Date | null };
@@ -32,13 +28,20 @@ const defaultDates: TravelDates = {
 };
 
 export default function SubscriptionScreen({
-  subscription,
+  route,
   navigation,
-}: SubscriptionScreenProps) {
-  subscription ||= new Subscription(); // Should happen in the parent component?
-  const search = subscription.search;
+}: SubscriptionScreenNavigationProps) {
+  // Loads subscription/search from API or create a new one if the id is null
+  const { subscriptionId } = route.params;
+  const {data, isLoading, error } = useSubscription("1", subscriptionId);
 
-  // Subscription parameters
+  if (!data) {
+    if (isLoading) return <Text>Loading...</Text>
+    else return <Text>Error: {error.message}</Text>;
+  }
+  const search = data.search;
+
+  // Search parameters
   const [destination, setDestination] = useState(search.destination);
   const [travelDates, setTravelDates] = useState<TravelDates>(defaultDates);
   const [daysAtDestination, setDaysAtDestination] = useState<number[]>([
