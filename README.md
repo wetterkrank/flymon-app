@@ -6,3 +6,4 @@
 ## Notes
 - Alternative to resthooks.io -- swr or react-query + zod for schema validation
 - Alternative backend options: Parse Platform
+- Auth: Nango?

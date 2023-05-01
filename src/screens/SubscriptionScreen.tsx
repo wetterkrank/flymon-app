@@ -2,13 +2,18 @@ import { useState } from "react";
 import { Button, StyleSheet, Switch, Text, View } from "react-native";
 import DatePickerModal from "react-native-modal-datetime-picker";
 
+import useSWRMutation from "swr/mutation";
+
 import { DestinationInput } from "../components/DestinationInput";
 import { DaysSelector } from "../components/DaysSelector";
 import { StopsSelector } from "../components/StopsSelector";
 
 import { SubscriptionScreenNavigationProps } from "../navigation/types";
 import { formattedDate } from "../helpers";
-import { useSubscription, newSubscription } from "../api/subscriptions/subscription";
+import {
+  useSubscription,
+  createSubscription,
+} from "../api/subscriptions/subscription";
 
 // Search parameters:
 // origin (config), destination (autocomplete)
@@ -18,37 +23,36 @@ import { useSubscription, newSubscription } from "../api/subscriptions/subscript
 // notification settings ("inform me when the price drops below X")
 
 type TravelDates = {
-  earliest: { value: Date | null };
-  latest: { value: Date | null };
-};
-
-const defaultDates: TravelDates = {
-  earliest: { value: null },
-  latest: { value: null },
+  earliest: Date;
+  latest: Date;
 };
 
 export default function SubscriptionScreen({
   route,
   navigation,
 }: SubscriptionScreenNavigationProps) {
-  // Loads subscription/search from API or create a new one if the id is null
   const { subscriptionId } = route.params;
-  const {data, isLoading, error } = useSubscription("1", subscriptionId);
+  // Loads subscription/search from the API or creates a new one if the id is null
+  const { data, isLoading, error } = useSubscription(subscriptionId);
+  console.log("Subscription screen: ", data);
 
   if (!data) {
-    if (isLoading) return <Text>Loading...</Text>
+    if (isLoading) return <Text>Loading...</Text>;
     else return <Text>Error: {error.message}</Text>;
   }
   const search = data.search;
 
   // Search parameters
   const [destination, setDestination] = useState(search.destination);
-  const [travelDates, setTravelDates] = useState<TravelDates>(defaultDates);
-  const [daysAtDestination, setDaysAtDestination] = useState<number[]>([
+  const [travelDates, setTravelDates] = useState<TravelDates>({
+    earliest: search.earliestDepartureDate,
+    latest: search.latestDepartureDate,
+  });
+  const [nightsAtDestination, setNightsAtDestination] = useState<number[]>([
     search.minNightsAtDestination,
     search.maxNightsAtDestination,
   ]);
-  const [maxStops, setMaxStops] = useState<number>(search.maxStopovers);
+  const [maxStopovers, setMaxStopovers] = useState<number>(search.maxStopovers);
 
   // Travel dates selection
   const [dateSelectMode, setDateSelectMode] =
@@ -66,7 +70,7 @@ export default function SubscriptionScreen({
   const handleSelectedDate = (date: Date) => {
     setTravelDates((prevDates) => {
       const dates = prevDates;
-      dates[dateSelectMode].value = date;
+      dates[dateSelectMode] = date;
       return dates;
     });
     hideDatePicker();
@@ -87,7 +91,7 @@ export default function SubscriptionScreen({
   const [isDaysSelectorVisible, setDaysSelectorVisible] = useState(false);
   const hideDaysSelector = () => setDaysSelectorVisible(false);
   const handleSelectedDays = (days: number[]) => {
-    setDaysAtDestination(days);
+    setNightsAtDestination(days);
     hideDaysSelector();
   };
 
@@ -95,14 +99,31 @@ export default function SubscriptionScreen({
   const [isStopsSelectorVisible, setStopsSelectorVisible] = useState(false);
   const hideStopsSelector = () => setStopsSelectorVisible(false);
   const handleSelectedStops = (maxStops: number) => {
-    setMaxStops(maxStops);
+    setMaxStopovers(maxStops);
     hideStopsSelector();
   };
 
-  // Confirm subscription
+  const { trigger } = useSWRMutation("subscriptions", createSubscription);
+
+  // Confirm subscription:
+  // navigate back
+  // create / update subscription on server
+  // optimistically? mutate data and refetch subscriptions
   const confirmSubscription = () => {
-    // Create / update subscription on server
-    navigation.navigate("Home");
+    navigation.goBack();
+    const newSubscription = {
+      search: {
+        origin: "BER",
+        destination: destination,
+        earliestDepartureDate: travelDates.earliest,
+        latestDepartureDate: travelDates.latest,
+        minNightsAtDestination: nightsAtDestination[0],
+        maxNightsAtDestination: nightsAtDestination[1],
+        maxStopovers: maxStopovers,
+        lastResult: null,
+      },
+    };
+    trigger(newSubscription);
   };
 
   return (
@@ -122,25 +143,25 @@ export default function SubscriptionScreen({
       </View>
 
       <Button title="Earliest departure" onPress={selectDepartureDate} />
-      <Text>{`Selected: ${formattedDate(travelDates.earliest.value)}`}</Text>
+      <Text>{`Selected: ${formattedDate(travelDates.earliest)}`}</Text>
 
       <Button title="Latest departure" onPress={selectReturnDate} />
-      <Text>{`Selected: ${formattedDate(travelDates.latest.value)}`}</Text>
+      <Text>{`Selected: ${formattedDate(travelDates.latest)}`}</Text>
 
       <Button
         title="Days at destination"
         onPress={() => setDaysSelectorVisible(true)}
       />
-      <Text>{`Days at destination: ${daysAtDestination[0]} - ${daysAtDestination[1]}`}</Text>
+      <Text>{`Days at destination: ${nightsAtDestination[0]} - ${nightsAtDestination[1]}`}</Text>
 
       <Button title="Max stops" onPress={() => setStopsSelectorVisible(true)} />
-      <Text>{`Max stops: ${maxStops}`}</Text>
+      <Text>{`Max stops: ${maxStopovers}`}</Text>
 
       <Button title="Confirm" onPress={confirmSubscription} />
 
       <DaysSelector
         isVisible={isDaysSelectorVisible}
-        values={daysAtDestination}
+        values={nightsAtDestination}
         onConfirm={handleSelectedDays}
         onCancel={hideDaysSelector}
       />

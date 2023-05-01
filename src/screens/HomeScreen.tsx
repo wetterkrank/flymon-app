@@ -5,7 +5,7 @@ import { SubscriptionsList } from "../components/SubscriptionsList";
 import { useSubscriptions } from "../api/subscriptions/subscription";
 
 export default function HomeScreen({ navigation }: HomeScreenNavigationProps) {
-  const { data, isLoading, error } = useSubscriptions("1");
+  const { data, isLoading, error } = useSubscriptions();
   console.log(data);
 
   return (

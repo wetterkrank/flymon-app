@@ -1,7 +1,12 @@
 import useSWR from "swr";
 import { z } from "zod";
 
+import * as DateFNS from "date-fns";
+
+import { fetcher } from "./requests";
+
 const BASE_URL = "http://192.168.1.128:3000";
+const USER_ID = "1";
 
 const resultSchema = z.object({
   id: z.number().optional(),
@@ -18,12 +23,12 @@ const searchSchema = z.object({
   id: z.number().optional(),
   origin: z.string(),
   destination: z.string(),
-  earliestDepartureDate: z.string(),
-  latestDepartureDate: z.string(),
+  earliestDepartureDate: z.string().transform((str) => new Date(str)),
+  latestDepartureDate: z.string().transform((str) => new Date(str)),
   minNightsAtDestination: z.number(),
   maxNightsAtDestination: z.number(),
   maxStopovers: z.number(),
-  lastResult: z.nullable(resultSchema),
+  lastResult: z.nullable(resultSchema).optional(),
 });
 
 const subscriptionSchema = z.object({
@@ -38,12 +43,9 @@ export type Search = z.infer<typeof searchSchema>;
 export type Subscription = z.infer<typeof subscriptionSchema>;
 export type Subscriptions = z.infer<typeof subscriptionListSchema>;
 
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
-
-export const useSubscriptions = (userId: string) => {
-  const { data, error, isLoading } = useSWR(
-    `${BASE_URL}/users/${userId}/subscriptions`,
-    fetcher
+export const useSubscriptions = () => {
+  const { data, error, isLoading } = useSWR('subscriptions',
+    (path) => fetcher(`${BASE_URL}/users/${USER_ID}/${path}`)
   );
   console.log(data);
   console.log(error?.message);
@@ -54,21 +56,21 @@ export const useSubscriptions = (userId: string) => {
   return {
     data: parsedData,
     isLoading,
-    error: error,
+    error,
   };
 };
 
-export const useSubscription = (userId: string, subscriptionId: string | null) => {
+export const useSubscription = (subscriptionId: string | null) => {
   if (!subscriptionId) {
     return {
-      data: newSubscription(userId),
+      data: newSubscription(),
       isLoading: false,
       error: undefined,
     };
   }
 
   const { data, error, isLoading } = useSWR(
-    `${BASE_URL}/users/${userId}/subscriptions/${subscriptionId}`,
+    `${BASE_URL}/users/${USER_ID}/subscriptions/${subscriptionId}`,
     fetcher
   );
   console.log(data);
@@ -78,26 +80,49 @@ export const useSubscription = (userId: string, subscriptionId: string | null) =
   return {
     data: parsedData,
     isLoading,
-    error: error
+    error: error,
+  };
+};
+
+export const createSubscription = async (_key: string, { arg }: {arg: Subscription}) => {
+  console.log("Arg: ", arg);
+  const body = JSON.stringify({
+    subscription: arg,
+  });
+  console.log(body);
+  const response = await fetch(`${BASE_URL}/users/${USER_ID}/subscriptions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body,
+  });
+  if (!response.ok) {
+    throw new Error("Failed to create subscription");
   }
+
+  const data = await response.json();
+  return subscriptionSchema.parse(data);
 };
 
 // TODO: can we generate this from the schema?
+export const newSearch = () => {
+  const earliestDepartureDate = DateFNS.addDays(new Date(), 1);
+  const latestDepartureDate = DateFNS.addDays(earliestDepartureDate, 2);
+  return {
+    id: undefined,
+    origin: "BER",
+    destination: "HKT",
+    earliestDepartureDate,
+    latestDepartureDate,
+    minNightsAtDestination: 7,
+    maxNightsAtDestination: 14,
+    maxStopovers: 1,
+    lastResult: null,
+  };
+};
 
-export const newSearch = () => ({
+export const newSubscription = () => ({
   id: undefined,
-  origin: "",
-  destination: "",
-  earliestDepartureDate: "",
-  latestDepartureDate: "",
-  minNightsAtDestination: 1,
-  maxNightsAtDestination: 1,
-  maxStopovers: 0,
-  lastResult: null,
-});
-
-export const newSubscription = (userId: string) => ({
-  id: undefined,
-  userId: userId,
   search: newSearch(),
 });
