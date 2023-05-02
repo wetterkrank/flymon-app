@@ -6,7 +6,6 @@ import { useSubscriptions } from "../api/subscriptions/subscription";
 
 export default function HomeScreen({ navigation }: HomeScreenNavigationProps) {
   const { data, isLoading, error } = useSubscriptions();
-  console.log(data);
 
   return (
     <View style={styles.container}>

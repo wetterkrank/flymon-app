@@ -14,6 +14,7 @@ import {
   useSubscription,
   createSubscription,
 } from "../api/subscriptions/subscription";
+import { TAutocompleteDropdownItem } from "react-native-autocomplete-dropdown";
 
 // Search parameters:
 // origin (config), destination (autocomplete)
@@ -44,6 +45,9 @@ export default function SubscriptionScreen({
 
   // Search parameters
   const [destination, setDestination] = useState(search.destination);
+  const onDestinationSelect = (selection: TAutocompleteDropdownItem) => {
+    setDestination(selection?.title || "???");
+  };
   const [travelDates, setTravelDates] = useState<TravelDates>({
     earliest: search.earliestDepartureDate,
     latest: search.latestDepartureDate,
@@ -129,7 +133,11 @@ export default function SubscriptionScreen({
   return (
     <View>
       {/* Pass props to the input */}
-      <DestinationInput />
+      <DestinationInput current={destination} onSelect={onDestinationSelect}/>
+      <Text style={{ color: "#668", fontSize: 13 }}>
+          Selected destination: {destination}
+      </Text>
+
 
       <View style={styles.relativeDates}>
         <Switch

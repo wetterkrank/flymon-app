@@ -1,32 +1,39 @@
 import React, { memo, useCallback, useState } from "react";
 import { Text } from "react-native";
-import { AutocompleteDropdown } from "react-native-autocomplete-dropdown";
+import {
+  AutocompleteDropdown,
+  TAutocompleteDropdownItem,
+} from "react-native-autocomplete-dropdown";
 import { fetchLocations } from "../api/locations/locations";
 
-export const DestinationInput = memo(() => {
-  const [loading, setLoading] = useState(false);
-  const [remoteDataSet, setRemoteDataSet] = useState(null);
-  const [selectedItem, setSelectedItem] = useState(null);
+type DestinationInputProps = {
+  current: string;
+  onSelect: (destination: TAutocompleteDropdownItem) => void;
+};
 
-  const getSuggestions = useCallback(async (query: string) => {
-    if (query.length < 3) {
-      setRemoteDataSet(null);
-      return;
-    }
-    setLoading(true);
+export const DestinationInput = memo(
+  ({ current, onSelect }: DestinationInputProps) => {
+    const [loading, setLoading] = useState(false);
+    const [remoteDataSet, setRemoteDataSet] = useState(null);
 
-    const locations = await fetchLocations(query);
-    const suggestions = locations.map((location) => ({
-      id: location.id,
-      title: location.name,
-    }));
+    const getSuggestions = useCallback(async (query: string) => {
+      if (query.length < 3) {
+        setRemoteDataSet(null);
+        return;
+      }
+      setLoading(true);
 
-    setRemoteDataSet(suggestions);
-    setLoading(false);
-  }, []);
+      const locations = await fetchLocations(query);
+      const suggestions = locations.map((location) => ({
+        id: location.id,
+        title: location.name,
+      }));
 
-  return (
-    <>
+      setRemoteDataSet(suggestions);
+      setLoading(false);
+    }, []);
+
+    return (
       <AutocompleteDropdown
         dataSet={remoteDataSet}
         closeOnBlur={false}
@@ -35,7 +42,7 @@ export const DestinationInput = memo(() => {
         textInputProps={{
           placeholder: "City or airport name",
         }}
-        onSelectItem={setSelectedItem}
+        onSelectItem={onSelect}
         loading={loading}
         onChangeText={getSuggestions}
         suggestionsListTextStyle={{
@@ -45,9 +52,6 @@ export const DestinationInput = memo(() => {
           <Text style={{ padding: 10, fontSize: 15 }}>Oops ¯\_(ツ)_/¯</Text>
         }
       />
-      <Text style={{ color: "#668", fontSize: 13 }}>
-        Selected item: {JSON.stringify(selectedItem)}
-      </Text>
-    </>
-  );
-});
+    );
+  }
+);
