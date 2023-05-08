@@ -14,11 +14,11 @@ type DestinationInputProps = {
 export const DestinationInput = memo(
   ({ current, onSelect }: DestinationInputProps) => {
     const [loading, setLoading] = useState(false);
-    const [remoteDataSet, setRemoteDataSet] = useState(null);
+    const [remoteDataSet, setRemoteDataSet] = useState(undefined);
 
     const getSuggestions = useCallback(async (query: string) => {
       if (query.length < 3) {
-        setRemoteDataSet(null);
+        setRemoteDataSet(undefined);
         return;
       }
       setLoading(true);
@@ -28,23 +28,27 @@ export const DestinationInput = memo(
         id: location.id,
         title: location.name,
       }));
+      console.log("Suggestions: ", suggestions);
 
       setRemoteDataSet(suggestions);
       setLoading(false);
     }, []);
 
+    console.log("DestinationInput current: ", current);
     return (
       <AutocompleteDropdown
         dataSet={remoteDataSet}
+        initialValue={current}
         closeOnBlur={false}
         useFilter={false}
-        clearOnFocus={false}
+        clearOnFocus={true}
         textInputProps={{
           placeholder: "City or airport name",
         }}
-        onSelectItem={onSelect}
+        onSelectItem={(item) => {item && onSelect(item)}}
         loading={loading}
         onChangeText={getSuggestions}
+        debounce={500}
         suggestionsListTextStyle={{
           color: "#8f3c96",
         }}

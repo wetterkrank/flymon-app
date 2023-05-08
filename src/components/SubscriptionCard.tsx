@@ -1,15 +1,16 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {Button, Pressable, StyleSheet, Text, View} from 'react-native';
 import { Subscription } from '../api/subscriptions/subscription';
 
 export type SubscriptionCardProps = {
   data: Subscription
+  handlePress: (id: string | undefined) => void;
 };
 
-export const SubscriptionCard = ({data}: SubscriptionCardProps) => {
+export const SubscriptionCard = ({data, handlePress}: SubscriptionCardProps) => {
   return (
-    <View style={styles.container}>
+    <Pressable style={styles.container} onPress={() => handlePress(data.id)}>
       <Text style={styles.item}>{data.search.destination}</Text>
-    </View>
+    </Pressable>
   );
 };
 

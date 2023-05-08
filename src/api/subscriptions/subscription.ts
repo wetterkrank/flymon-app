@@ -9,7 +9,7 @@ const BASE_URL = "http://192.168.1.128:3000";
 const USER_ID = "1";
 
 const resultSchema = z.object({
-  id: z.number().optional(),
+  id: z.string().optional(),
   price: z.number(),
   currency: z.string(),
   origin: z.string(),
@@ -20,7 +20,7 @@ const resultSchema = z.object({
 });
 
 const searchSchema = z.object({
-  id: z.number().optional(),
+  id: z.string().optional(),
   origin: z.string(),
   destination: z.string(),
   earliestDepartureDate: z.string().transform((str) => new Date(str)),
@@ -32,7 +32,7 @@ const searchSchema = z.object({
 });
 
 const subscriptionSchema = z.object({
-  id: z.number().optional(),
+  id: z.string().optional(),
   search: searchSchema,
 });
 
@@ -44,8 +44,8 @@ export type Subscription = z.infer<typeof subscriptionSchema>;
 export type Subscriptions = z.infer<typeof subscriptionListSchema>;
 
 export const useSubscriptions = () => {
-  const { data, error, isLoading } = useSWR('subscriptions',
-    (path) => fetcher(`${BASE_URL}/users/${USER_ID}/${path}`)
+  const { data, error, isLoading } = useSWR("subscriptions", (path) =>
+    fetcher(`${BASE_URL}/users/${USER_ID}/${path}`)
   );
   console.log(data);
   console.log(error?.message);
@@ -84,14 +84,22 @@ export const useSubscription = (subscriptionId: string | null) => {
   };
 };
 
-export const createSubscription = async (_key: string, { arg }: {arg: Subscription}) => {
-  console.log("Arg: ", arg);
+export const createSubscription = async (
+  _key: string,
+  { arg }: { arg: Subscription }
+) => {
+  console.log("Create or update subscription: ", arg);
+
   const body = JSON.stringify({
     subscription: arg,
   });
   console.log(body);
-  const response = await fetch(`${BASE_URL}/users/${USER_ID}/subscriptions`, {
-    method: "POST",
+
+  const method = arg.id ? "PUT" : "POST";
+  const id = arg.id ? arg.id : "";
+
+  const response = await fetch(`${BASE_URL}/users/${USER_ID}/subscriptions/${id}`, {
+    method: method,
     headers: {
       "Content-Type": "application/json",
     },

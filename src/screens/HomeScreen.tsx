@@ -7,10 +7,14 @@ import { useSubscriptions } from "../api/subscriptions/subscription";
 export default function HomeScreen({ navigation }: HomeScreenNavigationProps) {
   const { data, isLoading, error } = useSubscriptions();
 
+  const editSubscription = (id: string | undefined) => {
+    id && navigation.navigate("Subscription", { subscriptionId: id });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.destinations}>
-        <SubscriptionsList data={data} />
+        <SubscriptionsList data={data} handlePress={editSubscription}/>
       </View>
       <View style={styles.buttonContainer}>
         <Button

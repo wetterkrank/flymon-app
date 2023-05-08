@@ -5,6 +5,10 @@
 
 ## Notes
 - Alternative to resthooks.io -- swr or react-query + zod for schema validation
-- Alternative backend options: Parse Platform
-- Auth: Nango?
+- Alternative backend options: Parse Platform, Supabase
+  - authentication
+  - scheduler
+  - push notifications
+- Auth: Auth0, Nango? Authelia?
 - Router options: React Navigation, React Native Navigation, Expo Router
+- Build & release: fastlane.tools?
