@@ -12,3 +12,5 @@
 - Auth: Auth0, Nango? Authelia?
 - Router options: React Navigation, React Native Navigation, Expo Router
 - Build & release: fastlane.tools?
+- Backend deploy tool: coolify
+- Alternative to React Native in principle: Capacitor?

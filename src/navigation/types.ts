@@ -2,7 +2,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 export type HomeStackNavigatorParamList = {
   Home: undefined;
-  Subscription: { subscriptionId: string | null };
+  Subscription: { subscriptionId: string | undefined };
 };
 
 // possible nav routes from Home

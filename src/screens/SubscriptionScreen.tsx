@@ -1,17 +1,49 @@
 import { Text } from "react-native";
 
-import useSWRMutation from "swr/mutation";
+import { mutate } from "swr";
 
 import { SubscriptionScreenNavigationProps } from "../navigation/types";
 import {
   Search,
-  createSubscription,
-  useSubscription,
+  Subscription,
+  defaultSubscription,
+  saveSubscription,
+  useSubscriptions,
 } from "../api/subscriptions/subscription";
 import { SearchForm } from "../components/SearchForm";
 
+// If item has id, find corresponding item and replace it
+// If no id (new unsaved) or id not found (new saved item), add it to the list
+const insertOrReplace = (
+  item: Subscription,
+  list: Subscription[] | undefined = []
+) => {
+  const otherItems = list.filter(existingItem => existingItem.id !== item.id)
+  return [...otherItems, item]
+};
+
+// NOTE: if optimistic updates turn out to be too wonky, use good old spinner while saving
+const saveAndMutate = async (newSubscription: Subscription) => {
+  mutate<Subscription[]>(
+    "subscriptions",
+    async (list) => {
+      // Wait for the subscription to be posted to the API
+      const saved = await saveSubscription(newSubscription);
+      // Return the list, replacing the old one with the saved one
+      return insertOrReplace(saved, list);
+    },
+    {
+      // Provide the expected list for immediate display
+      optimisticData: (list: Subscription[]) =>
+        insertOrReplace(newSubscription, list),
+      // Don't revalidate the list -- we updated it already
+      revalidate: false,
+    }
+  );
+};
+
 // Search parameters:
-// origin (config), destination (autocomplete)
+// origin (set by config), destination (autocomplete search)
 // earliestDeparture date, latestDepartureDate (absolute or relative, like "tomorrow")
 // min/max daysAtDestination
 // maxStopovers (0, 1, 2)
@@ -22,29 +54,24 @@ export default function SubscriptionScreen({
   navigation,
 }: SubscriptionScreenNavigationProps) {
   const { subscriptionId } = route.params;
-
-  // Loads subscription/search from the API or creates a new one if the id is null
-  const { data, isLoading, error } = useSubscription(subscriptionId);
-  console.log("Subscription screen: ", data);
-
-  const { trigger: create } = useSWRMutation("subscriptions", createSubscription);
-  // const { trigger: update } = useSWRMutation("subscriptions", updateSubscription);
-
-  const onConfirm = (search: Search) => {
-    navigation.goBack();
-    const newSubscription = {
-      ...data,
-      search: search,
-    };
-    create(newSubscription);
-  };
+  // NOTE: we load all subscriptions to simplify optimistic updates
+  const { data: subscriptions, isLoading, error } = useSubscriptions();
 
   // TODO: better loading/error indication
-  if (!data) {
+  if (!subscriptions) {
     if (isLoading) return <Text>Loading...</Text>;
     else return <Text>Error: {error.message}</Text>;
   }
-  const search = data.search;
+  const subscription =
+    subscriptions.find((s) => s.id === subscriptionId) || defaultSubscription();
+  const search = subscription.search;
+
+  // NOTE: must handle 2 cases: new and updated subscription
+  const onConfirm = (search: Search) => {
+    const newSubscription = { ...subscription, search };
+    saveAndMutate(newSubscription);
+    navigation.goBack();
+  };
 
   return <SearchForm search={search} onConfirm={onConfirm} />;
 }

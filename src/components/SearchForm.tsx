@@ -24,7 +24,7 @@ export const SearchForm = ({ search, onConfirm }: SearchFormProps) => {
   // Search parameters
   const [destination, setDestination] = useState(search.destination);
   const onDestinationSelect = (selection: TAutocompleteDropdownItem) => {
-    console.log("Selected destination: ", selection);
+    // console.log("Selected destination: ", selection);
     setDestination(selection?.title || "???");
   };
   const [travelDates, setTravelDates] = useState<TravelDates>({
