@@ -11,6 +11,10 @@ npm-debug.*
 web-build/
 tmp/
 
+# (Pre)build folders
+ios/
+android/
+
 # macOS
 .DS_Store
 
