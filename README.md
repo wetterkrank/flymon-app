@@ -1,7 +1,7 @@
 # Flymon mobile app
 
-- Run the development server: `npm expo start`
-- Make a device build: `eas build --profile development --platform ios`
+- Run the development server: `npm expo start`, or
+- Make a device build: `eas build --profile development --platform ios` and `expo start --dev-client`
 
 ## Notes
 - Alternative to resthooks.io -- swr or react-query + zod for schema validation
