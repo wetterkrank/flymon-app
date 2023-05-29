@@ -9,8 +9,9 @@
   - authentication
   - scheduler
   - push notifications
-- Auth: Auth0, Nango? Authelia?
+- Auth: Auth0; Authelia or Authgear alternatives; or mb Devise?
 - Router options: React Navigation, React Native Navigation, Expo Router
 - Build & release: fastlane.tools?
 - Backend deploy tool: coolify
 - Alternative to React Native in principle: Capacitor?
+- Shopify Flashlist instead of FlatList

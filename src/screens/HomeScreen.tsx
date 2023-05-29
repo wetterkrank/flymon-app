@@ -42,16 +42,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   destinations: {
-    flex: 1,
-  },
-  destinationCard: {
-    height: 100,
-    marginVertical: 10,
-    backgroundColor: "lightblue",
-    alignItems: "center",
-    justifyContent: "center",
+    flex: 3,
   },
   buttonContainer: {
-    flex: 1,
+    justifyContent: "center",
+    flex: 1
   },
 });

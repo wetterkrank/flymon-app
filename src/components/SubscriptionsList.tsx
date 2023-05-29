@@ -8,21 +8,15 @@ export type SubscriptionsListProps = {
   handlePress: (id: string | undefined) => void;
 };
 
-export const SubscriptionsList = ({ data, handlePress }: SubscriptionsListProps) => {
+export const SubscriptionsList = ({
+  data,
+  handlePress,
+}: SubscriptionsListProps) => {
   const renderItem: ListRenderItem<Subscription> = ({ item }) => (
     <SubscriptionCard data={item} handlePress={handlePress} />
   );
 
-  return (
-    <View style={styles.container}>
-      <FlatList data={data} renderItem={renderItem} />
-    </View>
-  );
+  return <FlatList data={data} renderItem={renderItem} />;
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    height: "100%",
-  },
-});
+const styles = StyleSheet.create({});
