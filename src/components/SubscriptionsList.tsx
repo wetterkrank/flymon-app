@@ -5,7 +5,7 @@ import { Subscription } from "../api/subscriptions/subscription";
 
 export type SubscriptionsListProps = {
   data: Subscription[];
-  handlePress: (id: string | undefined) => void;
+  handlePress: (id: number | undefined) => void;
 };
 
 export const SubscriptionsList = ({

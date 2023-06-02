@@ -3,7 +3,7 @@ import { Subscription } from '../api/subscriptions/subscription';
 
 export type SubscriptionCardProps = {
   data: Subscription
-  handlePress: (id: string | undefined) => void;
+  handlePress: (id: number | undefined) => void;
 };
 
 export const SubscriptionCard = ({data, handlePress}: SubscriptionCardProps) => {

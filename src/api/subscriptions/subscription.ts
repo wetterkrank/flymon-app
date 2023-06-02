@@ -6,7 +6,7 @@ import * as DateFNS from "date-fns";
 import { fetcher, stasher } from "./requests";
 
 const resultSchema = z.object({
-  id: z.string().optional(),
+  id: z.number().optional(),
   price: z.number(),
   currency: z.string(),
   origin: z.string(),
@@ -22,7 +22,7 @@ const dateOrString = z.union([
   z.string().transform((str) => new Date(str)),
 ]);
 const searchSchema = z.object({
-  id: z.string().optional(),
+  id: z.number().optional(),
   origin: z.string(),
   destination: z.string(),
   earliestDepartureDate: dateOrString,
@@ -34,7 +34,7 @@ const searchSchema = z.object({
 });
 
 const subscriptionSchema = z.object({
-  id: z.string().optional(),
+  id: z.number().optional(),
   search: searchSchema,
 });
 

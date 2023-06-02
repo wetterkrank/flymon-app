@@ -9,7 +9,7 @@
   - authentication
   - scheduler
   - push notifications
-- Auth: Auth0; Authelia or Authgear alternatives; or mb Devise?
+- Auth: Auth0; Authelia, Authgear, Keycloak as alternatives; or mb Devise?
 - Router options: React Navigation, React Native Navigation, Expo Router
 - Build & release: fastlane.tools?
 - Backend deploy tool: coolify
