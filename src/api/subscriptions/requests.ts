@@ -1,7 +1,7 @@
 // TODO: possibly combine; see Kiwi Margarita
 // Maybe get rid of user in the path? If needed, request via query param
 const BASE_URL = "http://192.168.1.128:3000";
-const USER_ID = "1";
+const USER_ID = "0";
 
 export const fetcher = (path: string) => {
   console.log(`API GET started: ${path}...`);

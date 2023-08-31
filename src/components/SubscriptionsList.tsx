@@ -1,5 +1,5 @@
 import React from "react";
-import { FlatList, ListRenderItem, StyleSheet, Text, View } from "react-native";
+import { FlatList, ListRenderItem } from "react-native";
 import { SubscriptionCard } from "./SubscriptionCard";
 import { Subscription } from "../api/subscriptions/subscription";
 
@@ -18,5 +18,3 @@ export const SubscriptionsList = ({
 
   return <FlatList data={data} renderItem={renderItem} />;
 };
-
-const styles = StyleSheet.create({});

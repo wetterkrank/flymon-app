@@ -1,7 +1,9 @@
-import { Text } from "react-native";
+import { useEffect, useState } from "react";
+import { Text, View } from "react-native";
 
 import { mutate } from "swr";
 
+import { registerForPushNotificationsAsync } from "../services/notifications";
 import { SubscriptionScreenNavigationProps } from "../navigation/types";
 import {
   Search,
@@ -56,6 +58,12 @@ export default function SubscriptionScreen({
   const { subscriptionId } = route.params;
   // NOTE: we load all subscriptions to simplify optimistic updates
   const { data: subscriptions, isLoading, error } = useSubscriptions();
+  const [pushToken, setPushToken] = useState<string | undefined>(undefined);
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    registerForPushNotificationsAsync().then(token => setPushToken(token));
+  });
+
 
   // TODO: better loading/error indication
   if (!subscriptions) {
@@ -68,10 +76,19 @@ export default function SubscriptionScreen({
 
   // NOTE: must handle 2 cases: new and updated subscription
   const onConfirm = (search: Search) => {
-    const newSubscription = { ...subscription, search };
-    saveAndMutate(newSubscription);
-    navigation.goBack();
+    if (pushToken) {
+      const newSubscription = { ...subscription, search, pushToken };
+      saveAndMutate(newSubscription);
+      navigation.goBack();
+    } else {
+      setErrorMessage('Please allow push notifications to save the subscription')
+    }
   };
 
-  return <SearchForm search={search} onConfirm={onConfirm} />;
+  return (
+    <View>
+      <Text>{errorMessage && errorMessage}</Text>
+      <SearchForm search={search} onConfirm={onConfirm} />
+    </View>
+  );
 }

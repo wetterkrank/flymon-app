@@ -36,6 +36,7 @@ const searchSchema = z.object({
 const subscriptionSchema = z.object({
   id: z.number().optional(),
   search: searchSchema,
+  pushToken: z.string().optional(),
 });
 
 const subscriptionListSchema = z.array(subscriptionSchema);
