@@ -71,11 +71,18 @@ export const saveSubscription = async (subscription: Subscription) => {
 
   const response = await stasher(`subscriptions/${id}`, method, body);
   if (!response.ok) {
-    throw new Error("Failed to create subscription");
+    throw new Error("Could not create subscription");
   }
 
   const data = await response.json();
   return subscriptionSchema.parse(data);
+};
+
+export const deleteSubscription = async (id: number) => {
+  const response = await stasher(`subscriptions/${id}`, "DELETE", "");
+  if (!response.ok) {
+    throw new Error("Could not delete subscription");
+  }
 };
 
 // TODO: can we generate this from the schema?

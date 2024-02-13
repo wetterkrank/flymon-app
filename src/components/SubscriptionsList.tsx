@@ -15,6 +15,9 @@ export const SubscriptionsList = ({
   const renderItem: ListRenderItem<Subscription> = ({ item }) => (
     <SubscriptionCard data={item} handlePress={handlePress} />
   );
+  const keyExtractor = (item: Subscription) => item.id?.toString() || "new";
 
-  return <FlatList data={data} renderItem={renderItem} />;
+  return (
+    <FlatList data={data} renderItem={renderItem} keyExtractor={keyExtractor} />
+  );
 };

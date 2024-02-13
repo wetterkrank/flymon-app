@@ -3,6 +3,7 @@ import { Button, StyleSheet, Text, View } from "react-native";
 import { HomeScreenNavigationProps } from "../navigation/types";
 import { SubscriptionsList } from "../components/SubscriptionsList";
 import { useSubscriptions } from "../api/subscriptions/subscription";
+import { Spinner } from "../components/Spinner";
 
 export default function HomeScreen({ navigation }: HomeScreenNavigationProps) {
   const { data, isLoading, error: dataError } = useSubscriptions();
@@ -14,7 +15,7 @@ export default function HomeScreen({ navigation }: HomeScreenNavigationProps) {
 
   // TODO: better loading/error indication
   if (!data) {
-    if (isLoading) return <Text>Loading...</Text>;
+    if (isLoading) return Spinner();
     else return <Text>Error: {dataError.message}</Text>;
   }
 

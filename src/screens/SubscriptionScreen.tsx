@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Button, Text, View } from "react-native";
 
 import { mutate } from "swr";
 
@@ -9,10 +9,12 @@ import {
   Search,
   Subscription,
   defaultSubscription,
+  deleteSubscription,
   saveSubscription,
   useSubscriptions,
 } from "../api/subscriptions/subscription";
 import { SearchForm } from "../components/SearchForm";
+import { Spinner } from "../components/Spinner";
 
 // If item has id, find corresponding item and replace it
 // If no id (new unsaved) or id not found (new saved item), add it to the list
@@ -20,8 +22,8 @@ const insertOrReplace = (
   item: Subscription,
   list: Subscription[] | undefined = []
 ) => {
-  const otherItems = list.filter(existingItem => existingItem.id !== item.id)
-  return [...otherItems, item]
+  const otherItems = list.filter((existingItem) => existingItem.id !== item.id);
+  return [...otherItems, item];
 };
 
 // NOTE: if optimistic updates turn out to be too wonky, use good old spinner while saving
@@ -44,6 +46,21 @@ const saveAndMutate = async (newSubscription: Subscription) => {
   );
 };
 
+const deleteAndMutate = async (id: number) => {
+  mutate<Subscription[]>(
+    "subscriptions",
+    async (list: Subscription[] | undefined = []) => {
+      await deleteSubscription(id);
+      return list.filter((item) => item.id !== id);
+    },
+    {
+      optimisticData: (list: Subscription[]) =>
+        list.filter((item) => item.id !== id),
+      revalidate: false,
+    }
+  );
+};
+
 // Search parameters:
 // origin (set by config), destination (autocomplete search)
 // earliestDeparture date, latestDepartureDate (absolute or relative, like "tomorrow")
@@ -59,15 +76,16 @@ export default function SubscriptionScreen({
   // NOTE: we load all subscriptions to simplify optimistic updates
   const { data: subscriptions, isLoading, error } = useSubscriptions();
   const [pushToken, setPushToken] = useState<string | undefined>(undefined);
-  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(
+    undefined
+  );
   useEffect(() => {
-    registerForPushNotificationsAsync().then(token => setPushToken(token));
+    registerForPushNotificationsAsync().then((token) => setPushToken(token));
   });
-
 
   // TODO: better loading/error indication
   if (!subscriptions) {
-    if (isLoading) return <Text>Loading...</Text>;
+    if (isLoading) return Spinner();
     else return <Text>Error: {error.message}</Text>;
   }
   const subscription =
@@ -81,7 +99,16 @@ export default function SubscriptionScreen({
       saveAndMutate(newSubscription);
       navigation.goBack();
     } else {
-      setErrorMessage('Please allow push notifications to save the subscription')
+      setErrorMessage(
+        "Please allow push notifications to save the subscription"
+      );
+    }
+  };
+
+  const onDelete = () => {
+    if (subscription.id) {
+      deleteAndMutate(subscription.id);
+      navigation.goBack();
     }
   };
 
@@ -89,6 +116,7 @@ export default function SubscriptionScreen({
     <View>
       <Text>{errorMessage && errorMessage}</Text>
       <SearchForm search={search} onConfirm={onConfirm} />
+      {subscription.id && <Button title="Delete" onPress={onDelete} />}
     </View>
   );
 }

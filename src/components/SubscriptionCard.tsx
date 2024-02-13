@@ -10,9 +10,13 @@ export const SubscriptionCard = ({
   data,
   handlePress,
 }: SubscriptionCardProps) => {
+  const result = data.search.lastResult;
+  const price = result ? `${result.currency} ${result.price}` : "...";
+
   return (
     <Pressable style={styles.container} onPress={() => handlePress(data.id)}>
       <Text style={styles.item}>{data.search.destination}</Text>
+      { price && <Text style={styles.item}>{price}</Text> }
     </Pressable>
   );
 };
