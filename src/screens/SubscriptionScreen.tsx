@@ -6,42 +6,46 @@ import { mutate } from "swr";
 import { registerForPushNotificationsAsync } from "../services/notifications";
 import { SubscriptionScreenNavigationProps } from "../navigation/types";
 import {
-  Search,
-  Subscription,
-  defaultSubscription,
-  deleteSubscription,
-  saveSubscription,
   useSubscriptions,
+  defaultSubscription,
+  createSubscription,
+  updateSubscription,
+  deleteSubscription,
 } from "../api/subscriptions/subscription";
+import {
+  SearchParams,
+  searchParamsSchema,
+  Subscription,
+  NewSubscription,
+} from "../api/subscriptions/types";
 import { SearchForm } from "../components/SearchForm";
 import { Spinner } from "../components/Spinner";
 
-// If item has id, find corresponding item and replace it
-// If no id (new unsaved) or id not found (new saved item), add it to the list
+// Add the item to the list, replace existing one if found by id
 const insertOrReplace = (
   item: Subscription,
   list: Subscription[] | undefined = []
 ) => {
+
   const otherItems = list.filter((existingItem) => existingItem.id !== item.id);
   return [...otherItems, item];
 };
 
 // NOTE: if optimistic updates turn out to be too wonky, use good old spinner while saving
-const saveAndMutate = async (newSubscription: Subscription) => {
+const saveAndMutate = async (subscription: Subscription | NewSubscription) => {
   mutate<Subscription[]>(
     "subscriptions",
     async (list) => {
       // Wait for the subscription to be posted to the API
-      const saved = await saveSubscription(newSubscription);
+      const saved = ('id' in subscription)
+        ? await updateSubscription(subscription)
+        : await createSubscription(subscription);
+
       // Return the list, replacing the old one with the saved one
       return insertOrReplace(saved, list);
     },
     {
-      // Provide the expected list for immediate display
-      optimisticData: (list: Subscription[]) =>
-        insertOrReplace(newSubscription, list),
-      // Don't revalidate the list -- we updated it already
-      revalidate: false,
+      revalidate: true,
     }
   );
 };
@@ -90,10 +94,10 @@ export default function SubscriptionScreen({
   }
   const subscription =
     subscriptions.find((s) => s.id === subscriptionId) || defaultSubscription();
-  const search = subscription.search;
+  const searchParams = searchParamsSchema.parse(subscription.search); // only esssential data
 
   // NOTE: must handle 2 cases: new and updated subscription
-  const onConfirm = (search: Search) => {
+  const onConfirm = (search: SearchParams) => {
     if (pushToken) {
       const newSubscription = { ...subscription, search, pushToken };
       saveAndMutate(newSubscription);
@@ -106,7 +110,7 @@ export default function SubscriptionScreen({
   };
 
   const onDelete = () => {
-    if (subscription.id) {
+    if ('id' in subscription) {
       deleteAndMutate(subscription.id);
       navigation.goBack();
     }
@@ -115,8 +119,8 @@ export default function SubscriptionScreen({
   return (
     <View>
       <Text>{errorMessage && errorMessage}</Text>
-      <SearchForm search={search} onConfirm={onConfirm} />
-      {subscription.id && <Button title="Delete" onPress={onDelete} />}
+      <SearchForm search={searchParams} onConfirm={onConfirm} />
+      {('id' in subscription) && <Button title="Delete" onPress={onDelete} />}
     </View>
   );
 }

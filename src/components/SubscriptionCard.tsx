@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text } from "react-native";
-import { Subscription } from "../api/subscriptions/subscription";
+import { Subscription } from "../api/subscriptions/types";
 
 export type SubscriptionCardProps = {
   data: Subscription;

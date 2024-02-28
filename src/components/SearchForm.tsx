@@ -8,7 +8,7 @@ import { StopsSelector } from "../components/StopsSelector";
 
 import { formattedDate } from "../helpers";
 import { TAutocompleteDropdownItem } from "react-native-autocomplete-dropdown";
-import { Search } from "../api/subscriptions/subscription";
+import { SearchParams } from "../api/subscriptions/types";
 
 type TravelDates = {
   earliest: Date;
@@ -16,8 +16,8 @@ type TravelDates = {
 };
 
 type SearchFormProps = {
-  search: Search;
-  onConfirm: (search: Search) => void;
+  search: SearchParams;
+  onConfirm: (search: SearchParams) => void;
 };
 
 export const SearchForm = ({ search, onConfirm }: SearchFormProps) => {

@@ -23,7 +23,7 @@ export const fetcher = async (path: string) => {
   return response.json();
 };
 
-export const stasher = async (path: string, method: string, body: string) => {
+export const poster = async (path: string, method: string, body: string) => {
   console.log(`API ${method} started: ${path}...`);
   const url = `${BASE_URL}/users/${USER_ID}/${path}`;
   return fetch(url, {
