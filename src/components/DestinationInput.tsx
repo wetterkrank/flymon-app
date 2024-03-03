@@ -6,19 +6,33 @@ import {
 } from "react-native-autocomplete-dropdown";
 import { fetchLocations } from "../api/locations/locations";
 
+export type DestinationInputItem = TAutocompleteDropdownItem & {
+  code: string;
+};
+
 type DestinationInputProps = {
-  current: string;
-  onSelect: (destination: TAutocompleteDropdownItem) => void;
+  currentSelection: string;
+  onSelect: (destination: DestinationInputItem) => void;
 };
 
 export const DestinationInput = memo(
-  ({ current, onSelect }: DestinationInputProps) => {
+  ({ currentSelection, onSelect }: DestinationInputProps) => {
+    // NOTE: In order to show current selection as a nice string rather than IATA code,
+    // we'll need to save extra data in the subscription or search
+    // Or keep a dictionary of IATA codes and city/airport names
+    const initialValue = {
+      id: currentSelection,
+      code: currentSelection,
+      title: currentSelection,
+    };
     const [loading, setLoading] = useState(false);
-    const [remoteDataSet, setRemoteDataSet] = useState(undefined);
+    const [remoteDataSet, setRemoteDataSet] = useState<DestinationInputItem[]>([
+      initialValue,
+    ]);
 
     const getSuggestions = useCallback(async (query: string) => {
       if (query.length < 3) {
-        setRemoteDataSet(undefined);
+        setRemoteDataSet([]);
         return;
       }
       setLoading(true);
@@ -26,26 +40,29 @@ export const DestinationInput = memo(
       const locations = await fetchLocations(query);
       const suggestions = locations.map((location) => ({
         id: location.id,
+        code: location.code,
         title: location.name,
       }));
-      console.log("Suggestions: ", suggestions);
+      // console.log("Suggestions: ", suggestions);
 
       setRemoteDataSet(suggestions);
       setLoading(false);
     }, []);
 
-    console.log("DestinationInput current: ", current);
+    // console.log("DestinationInput current: ", currentSelection);
     return (
       <AutocompleteDropdown
         dataSet={remoteDataSet}
-        initialValue={current}
+        initialValue={initialValue}
         closeOnBlur={false}
         useFilter={false}
         clearOnFocus={true}
         textInputProps={{
           placeholder: "City or airport name",
         }}
-        onSelectItem={(item) => {item && onSelect(item)}}
+        onSelectItem={(item) => {
+          onSelect(item as DestinationInputItem);
+        }}
         loading={loading}
         onChangeText={getSuggestions}
         debounce={500}
@@ -53,7 +70,9 @@ export const DestinationInput = memo(
           color: "#8f3c96",
         }}
         EmptyResultComponent={
-          <Text style={{ padding: 10, fontSize: 15 }}>Oops ¯\_(ツ)_/¯</Text>
+          <Text style={{ padding: 10, fontSize: 15 }}>
+            No results ¯\_(ツ)_/¯
+          </Text>
         }
       />
     );

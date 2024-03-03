@@ -15,10 +15,11 @@ function sanitizeCity(location: ApiLocation) {
   return null;
 }
 
+// From https://github.com/kiwicom/margarita/blob/f572ddc9690ac9496ce18c608481112900a0fed3/apps/graphql/src/apps/location/helpers/sanitizeLocation.js#L18
 export default function sanitizeLocation(location: ApiLocation): Location {
   return {
     id: location.id,
-    locationId: location.id,
+    code: location.code,
     name: location.name,
     slug: location.slug,
     type: location.type,

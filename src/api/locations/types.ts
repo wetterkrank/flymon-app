@@ -8,15 +8,15 @@ export type LocationArea = {
 };
 
 export type Location = {
-  readonly id: string | null | undefined;
-  readonly locationId: string | null | undefined;
-  readonly name: string | null | undefined;
-  readonly timezone: string | null | undefined;
+  readonly id: string;
+  readonly code: string;
+  readonly name: string;
+  readonly timezone: string;
   readonly country: LocationArea | null | undefined;
-  readonly slug: string | null | undefined;
+  readonly slug: string;
   readonly city: LocationArea | null | undefined;
   readonly coordinates?: Coordinates;
-  readonly type: string | null | undefined;
+  readonly type: string;
 };
 
 export type Locations = ReadonlyArray<Location>;
@@ -34,12 +34,12 @@ type Coordinates = {
 };
 
 export type ApiLocation = {
-  readonly id: string | null | undefined;
-  readonly locationId: string | null | undefined;
-  readonly name: string | null | undefined;
-  readonly slug: string | null | undefined;
-  readonly timezone: string | null | undefined;
-  readonly type: string | null | undefined;
+  readonly id: string;
+  readonly code: string;
+  readonly name: string;
+  readonly slug: string;
+  readonly timezone: string;
+  readonly type: string;
   readonly city:
       | (ApiLocationArea & {
             readonly country: ApiLocationArea | null | undefined;

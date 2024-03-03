@@ -2,12 +2,12 @@ import { useState } from "react";
 import { Button, StyleSheet, Switch, Text, View } from "react-native";
 import DatePickerModal from "react-native-modal-datetime-picker";
 
-import { DestinationInput } from "../components/DestinationInput";
+import { DestinationInputItem, DestinationInput } from "./DestinationInput";
 import { DaysSelector } from "../components/DaysSelector";
 import { StopsSelector } from "../components/StopsSelector";
 
 import { formattedDate } from "../helpers";
-import { TAutocompleteDropdownItem } from "react-native-autocomplete-dropdown";
+// import { TAutocompleteDropdownItem } from "react-native-autocomplete-dropdown";
 import { SearchParams } from "../api/subscriptions/types";
 
 type TravelDates = {
@@ -23,9 +23,9 @@ type SearchFormProps = {
 export const SearchForm = ({ search, onConfirm }: SearchFormProps) => {
   // Search parameters
   const [destination, setDestination] = useState(search.destination);
-  const onDestinationSelect = (selection: TAutocompleteDropdownItem) => {
+  const onDestinationSelect = (selection: DestinationInputItem) => {
     // console.log("Selected destination: ", selection);
-    setDestination(selection?.title || "???");
+    setDestination(selection.code);
   };
   const [travelDates, setTravelDates] = useState<TravelDates>({
     earliest: search.earliestDepartureDate,
@@ -88,7 +88,7 @@ export const SearchForm = ({ search, onConfirm }: SearchFormProps) => {
 
   return (
     <View>
-      <DestinationInput current={destination} onSelect={onDestinationSelect} />
+      <DestinationInput currentSelection={destination} onSelect={onDestinationSelect} />
       <Text style={{ color: "#668", fontSize: 13 }}>
         Selected destination: {destination}
       </Text>
