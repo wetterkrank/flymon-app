@@ -20,6 +20,7 @@ export const DestinationInput = memo(
     // NOTE: In order to show current selection as a nice string rather than IATA code,
     // we'll need to save extra data in the subscription or search
     // Or keep a dictionary of IATA codes and city/airport names
+    // and possibly implement a local search with Fuse.js / Algolia / backend search with Typesense
     const initialValue = {
       id: currentSelection,
       code: currentSelection,
@@ -61,7 +62,7 @@ export const DestinationInput = memo(
           placeholder: "City or airport name",
         }}
         onSelectItem={(item) => {
-          onSelect(item as DestinationInputItem);
+          item && onSelect(item as DestinationInputItem); // also called at init when no item is selected
         }}
         loading={loading}
         onChangeText={getSuggestions}

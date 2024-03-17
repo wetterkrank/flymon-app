@@ -10,8 +10,8 @@ const resultSchema = z.object({
   currency: z.string(),
   origin: z.string(),
   destination: z.string(),
-  departureDate: z.string(),
-  returnDate: z.string(),
+  departureTime: z.string(),
+  returnTime: z.nullable(z.string()), // null for one-way flights
   deeplink: z.string(),
 });
 
