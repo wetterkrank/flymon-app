@@ -31,7 +31,7 @@ export const SearchForm = ({ search, onConfirm }: SearchFormProps) => {
     earliest: search.earliestDepartureDate,
     latest: search.latestDepartureDate,
   });
-  const [nightsAtDestination, setNightsAtDestination] = useState<number[]>([
+  const [nightsAtDestination, setNightsAtDestination] = useState<[number, number]>([
     search.minNightsAtDestination,
     search.maxNightsAtDestination,
   ]);
@@ -73,7 +73,7 @@ export const SearchForm = ({ search, onConfirm }: SearchFormProps) => {
   // Days at destination selector
   const [isDaysSelectorVisible, setDaysSelectorVisible] = useState(false);
   const hideDaysSelector = () => setDaysSelectorVisible(false);
-  const handleSelectedDays = (days: number[]) => {
+  const handleSelectedDays = (days: [number, number]) => {
     setNightsAtDestination(days);
     hideDaysSelector();
   };

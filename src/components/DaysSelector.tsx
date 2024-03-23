@@ -1,14 +1,17 @@
 import { useState } from "react";
-import { Modal, View, StyleSheet, Text, Pressable } from "react-native";
-
-import MultiSlider from "@ptomasroos/react-native-multi-slider";
+import { Modal, View, StyleSheet, Text, Pressable, TextInput } from "react-native";
 
 export type DaysSelectorProps = {
   isVisible: boolean;
-  values: number[];
-  onConfirm: (days: number[]) => void;
+  values: [number, number];
+  onConfirm: (days: [number, number]) => void;
   onCancel: () => void;
 };
+
+enum Mode {
+  Min = 0,
+  Max = 1,
+}
 
 export const DaysSelector = ({
   isVisible,
@@ -16,8 +19,14 @@ export const DaysSelector = ({
   onConfirm,
   onCancel,
 }: DaysSelectorProps) => {
-  const [daysAtDestination, setDaysAtDestination] = useState(values);
-  const sliderValuesChange = (values: number[]) => setDaysAtDestination(values);
+  const [daysAtDestination, setDaysAtDestination] = useState(values.map(String) as [string, string]);
+
+  // Strip non-numeric characters from input, just in case
+  const onChangeText = (value: string, mode: Mode) => {
+    const newValues = [...daysAtDestination] as [string, string];
+    newValues[mode] = value.replace(/[^0-9]/g, '');
+    setDaysAtDestination(newValues);
+  }
 
   return (
     <View style={styles.centeredView}>
@@ -31,21 +40,31 @@ export const DaysSelector = ({
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Hello World!</Text>
-            <MultiSlider
-              values={[daysAtDestination[0], daysAtDestination[1]]}
-              sliderLength={300}
-              onValuesChange={sliderValuesChange}
-              min={1}
-              max={30}
-              step={1}
-              allowOverlap
-              snapped
+            <Text style={styles.modalText}>Select days at destination</Text>
+
+            <TextInput
+              style={styles.input}
+              onChangeText={(value: string) => onChangeText(value, Mode.Min)}
+              value={daysAtDestination[Mode.Min]}
+              selection={{ start: 0, end: daysAtDestination[Mode.Min].length }}
+              keyboardType="numeric"
+            />
+
+            <TextInput
+              style={styles.input}
+              onChangeText={(value: string) => onChangeText(value, Mode.Max)}
+              value={daysAtDestination[Mode.Max]}
+              keyboardType="numeric"
             />
 
             <Pressable
               style={[styles.button, styles.buttonClose]}
-              onPress={() => onConfirm(daysAtDestination)}
+              onPress={() => {
+                const days = daysAtDestination.map(Number) as [number, number];
+                // Validate input: min <= max
+                // Zeros are valid values in fact
+                onConfirm(days)}
+              }
             >
               <Text style={styles.textStyle}>Confirm</Text>
             </Pressable>
@@ -57,6 +76,12 @@ export const DaysSelector = ({
 };
 
 const styles = StyleSheet.create({
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+  },
   centeredView: {
     flex: 1,
     justifyContent: "center",
