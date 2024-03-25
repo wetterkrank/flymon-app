@@ -1,4 +1,3 @@
-import React from "react";
 import { FlatList, ListRenderItem } from "react-native";
 import { SubscriptionCard } from "./SubscriptionCard";
 import { Subscription } from "../api/subscriptions/types";

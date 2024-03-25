@@ -20,7 +20,6 @@ const registerForPushNotificationsAsync = async (): Promise<string|undefined> =>
     console.log('Must use physical device for Push Notifications');
   }
   apnDebug();
-  console.log('Push token:', token);
   return token;
 }
 
@@ -29,7 +28,6 @@ const apnDebug = async () => {
   console.log('APN env:', apnEnv);
   const releaseType = await Application.getIosApplicationReleaseTypeAsync();
   console.log('Release type:', releaseType);
-
 }
 
 export { registerForPushNotificationsAsync };
