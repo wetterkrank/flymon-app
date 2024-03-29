@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Button, Text, View } from "react-native";
+import { Text } from "react-native";
 
 import { mutate } from "swr";
+import { Box, VStack, Button, ButtonText, View } from "@gluestack-ui/themed";
 
 import { registerForPushNotificationsAsync } from "../services/notifications";
-import { SubscriptionScreenNavigationProps } from "../navigation/types";
+import { EditSubscriptionScreenNavigationProps } from "../navigation/types";
 import {
   useSubscriptions,
   defaultSubscription,
@@ -26,7 +27,6 @@ const insertOrReplace = (
   item: Subscription,
   list: Subscription[] | undefined = []
 ) => {
-
   const otherItems = list.filter((existingItem) => existingItem.id !== item.id);
   return [...otherItems, item];
 };
@@ -37,9 +37,10 @@ const saveAndMutate = async (subscription: Subscription | NewSubscription) => {
     "subscriptions",
     async (list) => {
       // Wait for the subscription to be posted to the API
-      const saved = ('id' in subscription)
-        ? await updateSubscription(subscription)
-        : await createSubscription(subscription);
+      const saved =
+        "id" in subscription
+          ? await updateSubscription(subscription)
+          : await createSubscription(subscription);
 
       // Return the list, replacing the old one with the saved one
       return insertOrReplace(saved, list);
@@ -72,10 +73,10 @@ const deleteAndMutate = async (id: number) => {
 // maxStopovers (0, 1, 2)
 // notification settings ("inform me when the price drops below X")
 
-export default function SubscriptionScreen({
+export default function EditSubscriptionScreen({
   route,
   navigation,
-}: SubscriptionScreenNavigationProps) {
+}: EditSubscriptionScreenNavigationProps) {
   const { subscriptionId } = route.params;
   // NOTE: we load all subscriptions to simplify optimistic updates
   const { data: subscriptions, isLoading, error } = useSubscriptions();
@@ -110,17 +111,33 @@ export default function SubscriptionScreen({
   };
 
   const onDelete = () => {
-    if ('id' in subscription) {
+    if ("id" in subscription) {
       deleteAndMutate(subscription.id);
       navigation.goBack();
     }
   };
 
   return (
-    <View>
-      <Text>{errorMessage && errorMessage}</Text>
-      <SearchForm search={searchParams} onConfirm={onConfirm} />
-      {('id' in subscription) && <Button title="Delete" onPress={onDelete} />}
+    <View flex={1}>
+      <VStack space="sm" justifyContent="space-between" flex={1}>
+        {errorMessage && <Text>{errorMessage}</Text>}
+        <View flex={7}>
+          <SearchForm search={searchParams} onConfirm={onConfirm} />
+        </View>
+        <View
+          flex={1}
+          flexDirection="row"
+          justifyContent="flex-end"
+          $base-pl="$4"
+          $base-pr="$5"
+        >
+          {"id" in subscription && (
+            <Button onPress={onDelete} variant="link" action="negative">
+              <ButtonText>Delete</ButtonText>
+            </Button>
+          )}
+        </View>
+      </VStack>
     </View>
   );
 }

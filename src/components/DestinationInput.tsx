@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useState } from "react";
-import { Text } from "react-native";
+import { Dimensions, Text } from "react-native";
 import {
   AutocompleteDropdown,
   TAutocompleteDropdownItem,
@@ -44,22 +44,22 @@ export const DestinationInput = memo(
         code: location.code,
         title: location.name,
       }));
-      // console.log("Suggestions: ", suggestions);
-
       setRemoteDataSet(suggestions);
       setLoading(false);
     }, []);
 
-    // console.log("DestinationInput current: ", currentSelection);
     return (
       <AutocompleteDropdown
         dataSet={remoteDataSet}
         initialValue={initialValue}
         closeOnBlur={false}
-        useFilter={false}
+        useFilter={false} // set false to prevent rerender twice
         clearOnFocus={true}
         textInputProps={{
           placeholder: "City or airport name",
+          style: {
+            color: '#fff',
+          },
         }}
         onSelectItem={(item) => {
           item && onSelect(item as DestinationInputItem); // also called at init when no item is selected
@@ -67,14 +67,22 @@ export const DestinationInput = memo(
         loading={loading}
         onChangeText={getSuggestions}
         debounce={500}
+        // suggestionsListMaxHeight={Dimensions.get('window').height * 0.3}
+        inputContainerStyle={{
+          borderRadius: 0,
+          backgroundColor: '#383b42',
+          height: 50,
+          alignItems: 'center',
+
+        }}
+        rightButtonsContainerStyle={{
+          alignSelf: 'center',
+        }}
         suggestionsListTextStyle={{
           color: "#8f3c96",
         }}
-        EmptyResultComponent={
-          <Text style={{ padding: 10, fontSize: 15 }}>
-            No results ¯\_(ツ)_/¯
-          </Text>
-        }
+        emptyResultText="No results ¯\_(ツ)_/¯"
+        // ChevronIconComponent={<ChevronDown size={20} color="#fff" />}
       />
     );
   }

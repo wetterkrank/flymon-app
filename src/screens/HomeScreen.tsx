@@ -21,7 +21,6 @@ export default function HomeScreen({ navigation }: HomeScreenNavigationProps) {
 
   return (
     <View style={styles.container}>
-
       <View style={styles.destinations}>
         <SubscriptionsList data={data} handlePress={editSubscription} />
       </View>
@@ -42,10 +41,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     justifyContent: "space-between",
-  },
-  loginStatus: {
-    justifyContent: "center",
-    alignItems: "center"
   },
   destinations: {
     flex: 3,

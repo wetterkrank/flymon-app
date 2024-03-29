@@ -3,7 +3,7 @@ import * as React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import HomeScreen from "../screens/HomeScreen";
-import SubscriptionScreen from "../screens/SubscriptionScreen";
+import EditSubscriptionScreen from "../screens/EditSubscriptionScreen";
 
 import { HomeStackNavigatorParamList } from "./types";
 
@@ -15,7 +15,7 @@ const HomeStackNavigator = () => {
       <HomeStack.Screen name="Home" component={HomeScreen} />
       <HomeStack.Screen
         name="Subscription"
-        component={SubscriptionScreen}
+        component={EditSubscriptionScreen}
         options={{ gestureEnabled: false }}
       />
     </HomeStack.Navigator>

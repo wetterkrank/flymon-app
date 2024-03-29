@@ -25,6 +25,7 @@ export default function App() {
     cities: {},
   });
   useEffect(() => {
+    console.log("Preparing locations data");
     const airports = airportsData.reduce((acc, airport) => {
       acc[airport.code] = airport;
       return acc;

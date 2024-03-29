@@ -1,4 +1,5 @@
 import useSWR from "swr";
+import useSWRMutation from "swr/mutation";
 
 import * as DateFNS from "date-fns";
 
@@ -21,6 +22,12 @@ export const useSubscriptions = () => {
     isLoading,
     error,
   };
+};
+
+export const refreshSubscriptions = () => {
+  console.log("Running refreshSubscriptions...");
+  const { trigger, isMutating } = useSWRMutation("subscriptions", fetcher);
+  return { trigger, isMutating };
 };
 
 export const createSubscription = async (subscription: NewSubscription) => {
