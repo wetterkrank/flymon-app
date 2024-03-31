@@ -6,13 +6,13 @@ export type HomeStackNavigatorParamList = {
 };
 
 // possible nav routes from Home
-export type HomeScreenNavigationProps = NativeStackScreenProps<
+export type HomeScreenNavProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
   "Home"
 >;
 
 // possible nav routes from Subscription
-export type EditSubscriptionScreenNavigationProps = NativeStackScreenProps<
+export type EditSubscriptionScreenNavProps = NativeStackScreenProps<
   HomeStackNavigatorParamList,
   "Subscription"
 >;

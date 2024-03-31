@@ -1,11 +1,11 @@
 import { Button, StyleSheet, Text, View } from "react-native";
 
-import { HomeScreenNavigationProps } from "../navigation/types";
+import { HomeScreenNavProps } from "../navigation/types";
 import { SubscriptionsList } from "../components/SubscriptionsList";
 import { useSubscriptions } from "../api/subscriptions/subscription";
 import { Spinner } from "../components/Spinner";
 
-export default function HomeScreen({ navigation }: HomeScreenNavigationProps) {
+export default function HomeScreen({ navigation }: HomeScreenNavProps) {
   const { data, isLoading, error: dataError } = useSubscriptions();
 
   // TODO: separate existing and new subscription types? then we won't need undefined here
