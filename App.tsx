@@ -4,7 +4,7 @@ import * as Notifications from "expo-notifications";
 import { GluestackUIProvider } from "@gluestack-ui/themed";
 import { config } from "@gluestack-ui/config"; // Optional if you want to use default theme
 
-import HomeStackNavigator from "./src/navigation/HomeStack";
+import RootNavigator from "./src/navigation/Root";
 
 import { LocationsContext, LocationsData } from "./src/services/locations";
 import airportsData from "./src/services/locations/airports.json";
@@ -19,7 +19,7 @@ export default function App() {
     }),
   });
 
-  //
+  // TODO: Move this to a separate hook?
   const [locationsData, setLocationsData] = useState<LocationsData>({
     airports: {},
     cities: {},
@@ -41,7 +41,7 @@ export default function App() {
     <GluestackUIProvider config={config}>
       <LocationsContext.Provider value={locationsData}>
         <NavigationContainer>
-          <HomeStackNavigator />
+          <RootNavigator />
         </NavigationContainer>
       </LocationsContext.Provider>
     </GluestackUIProvider>
