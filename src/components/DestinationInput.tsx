@@ -5,6 +5,7 @@ import {
   TAutocompleteDropdownItem,
 } from "react-native-autocomplete-dropdown";
 import { fetchLocations } from "../api/locations/locations";
+import { Icon, ChevronDownIcon, CloseIcon } from "@gluestack-ui/themed";
 
 export type DestinationInputItem = TAutocompleteDropdownItem & {
   code: string;
@@ -52,13 +53,13 @@ export const DestinationInput = memo(
       <AutocompleteDropdown
         dataSet={remoteDataSet}
         initialValue={initialValue}
-        closeOnBlur={false}
+        closeOnBlur={true}
         useFilter={false} // set false to prevent rerender twice
         clearOnFocus={true}
         textInputProps={{
           placeholder: "City or airport name",
           style: {
-            color: '#fff',
+            color: "#fff", // TODO: use theme
           },
         }}
         onSelectItem={(item) => {
@@ -67,22 +68,43 @@ export const DestinationInput = memo(
         loading={loading}
         onChangeText={getSuggestions}
         debounce={500}
-        // suggestionsListMaxHeight={Dimensions.get('window').height * 0.3}
+        suggestionsListMaxHeight={Dimensions.get("window").height * 0.3}
         inputContainerStyle={{
           borderRadius: 0,
-          backgroundColor: '#383b42',
-          height: 50,
-          alignItems: 'center',
-
+          backgroundColor: "#383b42",
+          height: 60,
+          alignItems: "center",
         }}
         rightButtonsContainerStyle={{
-          alignSelf: 'center',
+          alignSelf: "center",
+          right: 10,
+          gap: 10,
+        }}
+        suggestionsListContainerStyle={{
+          marginTop: 10,
+          borderRadius: 0,
         }}
         suggestionsListTextStyle={{
           color: "#8f3c96",
         }}
-        emptyResultText="No results ¯\_(ツ)_/¯"
-        // ChevronIconComponent={<ChevronDown size={20} color="#fff" />}
+        EmptyResultComponent={
+          remoteDataSet.length >= 3 ? (
+            <Text style={{ padding: 10, fontSize: 15 }}>
+              No results ¯\_(ツ)_/¯
+            </Text>
+          ) : (
+            <></>
+          )
+        }
+        ChevronIconComponent={
+          <Icon
+            as={ChevronDownIcon}
+            size="xl"
+            color="$white"
+            backgroundColor="$red"
+          />
+        }
+        ClearIconComponent={<Icon as={CloseIcon} size="xl" color="$white" />}
       />
     );
   }

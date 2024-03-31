@@ -2,7 +2,14 @@ import { useEffect, useState } from "react";
 import { Text } from "react-native";
 
 import { mutate } from "swr";
-import { Box, VStack, Button, ButtonText, View } from "@gluestack-ui/themed";
+import {
+  VStack,
+  Button,
+  ButtonText,
+  View,
+  ButtonIcon,
+  TrashIcon,
+} from "@gluestack-ui/themed";
 
 import { registerForPushNotificationsAsync } from "../services/notifications";
 import { EditSubscriptionScreenNavigationProps } from "../navigation/types";
@@ -54,13 +61,12 @@ const saveAndMutate = async (subscription: Subscription | NewSubscription) => {
 const deleteAndMutate = async (id: number) => {
   mutate<Subscription[]>(
     "subscriptions",
-    async (list: Subscription[] | undefined = []) => {
+    async (list = []) => {
       await deleteSubscription(id);
       return list.filter((item) => item.id !== id);
     },
     {
-      optimisticData: (list: Subscription[]) =>
-        list.filter((item) => item.id !== id),
+      optimisticData: (list = []) => list.filter((item) => item.id !== id),
       revalidate: false,
     }
   );
@@ -121,11 +127,11 @@ export default function EditSubscriptionScreen({
     <View flex={1}>
       <VStack space="sm" justifyContent="space-between" flex={1}>
         {errorMessage && <Text>{errorMessage}</Text>}
-        <View flex={7}>
+        <View flex={0.8}>
           <SearchForm search={searchParams} onConfirm={onConfirm} />
         </View>
         <View
-          flex={1}
+          flex={0.2}
           flexDirection="row"
           justifyContent="flex-end"
           $base-pl="$4"
@@ -134,6 +140,7 @@ export default function EditSubscriptionScreen({
           {"id" in subscription && (
             <Button onPress={onDelete} variant="link" action="negative">
               <ButtonText>Delete</ButtonText>
+              <ButtonIcon as={TrashIcon}></ButtonIcon>
             </Button>
           )}
         </View>
