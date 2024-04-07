@@ -29,6 +29,7 @@ import {
 import { SearchForm } from "../components/SearchForm";
 import { Spinner } from "../components/Spinner";
 
+
 // Add the item to the list, replace existing one if found by id
 const insertOrReplace = (
   item: Subscription,
@@ -128,7 +129,7 @@ export default function EditSubscriptionScreen({
       <VStack space="sm" justifyContent="space-between" flex={1}>
         {errorMessage && <Text>{errorMessage}</Text>}
         <View flex={0.8}>
-          <SearchForm search={searchParams} onConfirm={onConfirm} />
+          <SearchForm search={searchParams} navigation={navigation} onConfirm={onConfirm} />
         </View>
         <View
           flex={0.2}

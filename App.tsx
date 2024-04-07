@@ -3,6 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
 import { GluestackUIProvider } from "@gluestack-ui/themed";
 import { config } from "@gluestack-ui/config"; // Optional if you want to use default theme
+import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
 
 import RootNavigator from "./src/navigation/Root";
 
@@ -40,9 +41,11 @@ export default function App() {
   return (
     <GluestackUIProvider config={config}>
       <LocationsContext.Provider value={locationsData}>
-        <NavigationContainer>
-          <RootNavigator />
-        </NavigationContainer>
+        <AutocompleteDropdownContextProvider>
+          <NavigationContainer>
+            <RootNavigator />
+          </NavigationContainer>
+        </AutocompleteDropdownContextProvider>
       </LocationsContext.Provider>
     </GluestackUIProvider>
   );
