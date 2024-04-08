@@ -79,7 +79,7 @@ export const DestinationInput = memo(
           dataSet={remoteDataSet}
           initialValue={initialValue}
           closeOnBlur={false} // NOTE: existing issue, https://github.com/onmotion/react-native-autocomplete-dropdown/issues/111
-          useFilter={false} // set false to prevent rerendering twice
+          useFilter={false} // false for remote dataset to prevent rendering twice
           clearOnFocus={true}
           onSelectItem={(item) => {
             item && onSelect(item as DestinationInputItem); // also called at init when no item is selected

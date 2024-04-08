@@ -24,7 +24,11 @@ type SearchFormProps = {
   onConfirm: (search: SearchParams) => void;
 };
 
-export const SearchForm = ({ search, navigation, onConfirm }: SearchFormProps) => {
+export const SearchForm = ({
+  search,
+  navigation,
+  onConfirm,
+}: SearchFormProps) => {
   // Search parameters
   const [destination, setDestination] = useState(search.destination);
   const onDestinationSelect = (selection: DestinationInputItem) => {
@@ -52,11 +56,11 @@ export const SearchForm = ({ search, navigation, onConfirm }: SearchFormProps) =
   };
 
   const handleSelectedDate = (date: Date) => {
-    setTravelDates((prevDates) => {
-      const dates = prevDates;
-      dates[dateSelectMode] = date;
-      return dates;
-    });
+    setTravelDates((dates) =>
+      dateSelectMode == "earliest"
+        ? { ...dates, earliest: date }
+        : { ...dates, latest: date }
+    );
     hideDatePicker();
     setDateSelectMode("earliest");
   };
@@ -91,23 +95,35 @@ export const SearchForm = ({ search, navigation, onConfirm }: SearchFormProps) =
 
   // NOTE: How to refactor?
   useEffect(() => {
+    console.log("HEADER UPDATE");
     navigation.setOptions({
       headerRight: () => (
-        <Button title="Save" onPress={() => {
-          const search = {
-            origin: "BER",
-            destination: destination,
-            earliestDepartureDate: travelDates.earliest,
-            latestDepartureDate: travelDates.latest,
-            minNightsAtDestination: nightsAtDestination[0],
-            maxNightsAtDestination: nightsAtDestination[1],
-            maxStopovers: maxStopovers,
-            lastResult: null,
-          };
-          onConfirm(search)}} />
+        <Button
+          title="Save"
+          onPress={() => {
+            const search = {
+              origin: "BER",
+              destination: destination,
+              earliestDepartureDate: travelDates.earliest,
+              latestDepartureDate: travelDates.latest,
+              minNightsAtDestination: nightsAtDestination[0],
+              maxNightsAtDestination: nightsAtDestination[1],
+              maxStopovers: maxStopovers,
+              lastResult: null,
+            };
+            onConfirm(search);
+          }}
+        />
       ),
     });
-  }, [navigation, destination, travelDates, nightsAtDestination, maxStopovers, onConfirm]);
+  }, [
+    navigation,
+    destination,
+    travelDates,
+    nightsAtDestination,
+    maxStopovers,
+    onConfirm,
+  ]);
 
   return (
     <View flex={1}>
