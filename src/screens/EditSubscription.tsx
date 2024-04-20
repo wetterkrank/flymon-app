@@ -12,7 +12,7 @@ import {
 } from "@gluestack-ui/themed";
 
 import { registerForPushNotificationsAsync } from "../services/notifications";
-import { EditSubscriptionScreenNavProps } from "../navigation/types";
+import { RootStackScreenProps } from "../navigation/types";
 import {
   useSubscriptions,
   defaultSubscription,
@@ -83,7 +83,7 @@ const deleteAndMutate = async (id: number) => {
 export default function EditSubscriptionScreen({
   route,
   navigation,
-}: EditSubscriptionScreenNavProps) {
+}: RootStackScreenProps<'EditSubscription'>) {
   const { subscriptionId } = route.params;
   // NOTE: we load all subscriptions to simplify optimistic updates
   const { data: subscriptions, isLoading, error } = useSubscriptions();
@@ -102,6 +102,7 @@ export default function EditSubscriptionScreen({
   }
   const subscription =
     subscriptions.find((s) => s.id === subscriptionId) || defaultSubscription();
+
   const searchParams = searchParamsSchema.parse(subscription.search); // only esssential data
 
   // NOTE: must handle 2 cases: new and updated subscription

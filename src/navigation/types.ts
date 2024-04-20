@@ -1,18 +1,10 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-export type RootNavigatorParamList = {
+export type RootStackParamList = {
   Home: undefined;
-  Subscription: { subscriptionId: number | undefined };
+  EditSubscription: { subscriptionId: number | undefined };
+  Destination: undefined;
 };
 
-// possible nav routes from Home
-export type HomeScreenNavProps = NativeStackScreenProps<
-  RootNavigatorParamList,
-  "Home"
->;
-
-// possible nav routes from Subscription
-export type EditSubscriptionScreenNavProps = NativeStackScreenProps<
-  RootNavigatorParamList,
-  "Subscription"
->;
+export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
+  NativeStackScreenProps<RootStackParamList, Screen>;

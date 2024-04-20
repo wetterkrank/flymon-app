@@ -1,16 +1,16 @@
 import { Button, StyleSheet, Text, View } from "react-native";
 
-import { HomeScreenNavProps } from "../navigation/types";
+import { RootStackScreenProps } from "../navigation/types";
 import { SubscriptionsList } from "../components/SubscriptionsList";
 import { useSubscriptions } from "../api/subscriptions/subscription";
 import { Spinner } from "../components/Spinner";
 
-export default function HomeScreen({ navigation }: HomeScreenNavProps) {
+export default function HomeScreen({ navigation }: RootStackScreenProps<'Home'>) {
   const { data, isLoading, error: dataError } = useSubscriptions();
 
   // TODO: separate existing and new subscription types? then we won't need undefined here
   const editSubscription = (id: number | undefined) => {
-    id && navigation.navigate("Subscription", { subscriptionId: id });
+    id && navigation.navigate("EditSubscription", { subscriptionId: id });
   };
 
   // TODO: better loading/error indication
@@ -28,7 +28,7 @@ export default function HomeScreen({ navigation }: HomeScreenNavProps) {
         <Button
           title="Add Destination"
           onPress={() => {
-            navigation.navigate("Subscription", { subscriptionId: undefined });
+            navigation.navigate("EditSubscription", { subscriptionId: undefined });
           }}
         />
       </View>

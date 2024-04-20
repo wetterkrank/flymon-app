@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Modal, View, StyleSheet, Text, Pressable, TextInput } from "react-native";
+import { View, StyleSheet, Text, Pressable, TextInput } from "react-native";
+import { Modal, ModalBackdrop } from "@gluestack-ui/themed";
 
 export type DaysSelectorProps = {
   isVisible: boolean;
@@ -19,25 +20,26 @@ export const DaysSelector = ({
   onConfirm,
   onCancel,
 }: DaysSelectorProps) => {
-  const [daysAtDestination, setDaysAtDestination] = useState(values.map(String) as [string, string]);
+  const [daysAtDestination, setDaysAtDestination] = useState(
+    values.map(String) as [string, string]
+  );
 
   // Strip non-numeric characters from input, just in case
   const onChangeText = (value: string, mode: Mode) => {
     const newValues = [...daysAtDestination] as [string, string];
-    newValues[mode] = value.replace(/[^0-9]/g, '');
+    newValues[mode] = value.replace(/[^0-9]/g, "");
     setDaysAtDestination(newValues);
-  }
+  };
 
   return (
     <View style={styles.centeredView}>
       <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isVisible}
-        onRequestClose={() => {
-          onCancel;
-        }}
+        closeOnOverlayClick={true}
+        isOpen={isVisible}
+        onClose={() => {console.log("onClose"); onCancel();}}
       >
+        <ModalBackdrop />
+
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Select days at destination</Text>
@@ -63,8 +65,8 @@ export const DaysSelector = ({
                 const days = daysAtDestination.map(Number) as [number, number];
                 // Validate input: min <= max
                 // Zeros are valid values in fact
-                onConfirm(days)}
-              }
+                onConfirm(days);
+              }}
             >
               <Text style={styles.textStyle}>Confirm</Text>
             </Pressable>

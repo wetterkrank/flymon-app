@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Text } from "react-native";
+import { Button as RNButton } from "react-native";
 import DatePickerModal from "react-native-modal-datetime-picker";
 
 import { DestinationInputItem, DestinationInput } from "./DestinationInput";
@@ -9,9 +9,13 @@ import { StopsSelector } from "../components/StopsSelector";
 import { formattedDate } from "../helpers";
 // import { TAutocompleteDropdownItem } from "react-native-autocomplete-dropdown";
 import { SearchParams } from "../api/subscriptions/types";
-import { View } from "@gluestack-ui/themed";
-import { EditSubscriptionScreenNavProps } from "../navigation/types";
-// import Autocomplete from "./Autocomplete/Autocomplete";
+import {
+  Button,
+  ButtonText,
+  View,
+  Text,
+} from "@gluestack-ui/themed";
+import { RootStackScreenProps } from "../navigation/types";
 
 type TravelDates = {
   earliest: Date;
@@ -20,31 +24,34 @@ type TravelDates = {
 
 type SearchFormProps = {
   search: SearchParams;
-  navigation: EditSubscriptionScreenNavProps["navigation"];
+  navigation: RootStackScreenProps<"EditSubscription">["navigation"];
   onConfirm: (search: SearchParams) => void;
 };
+
+// const Cover = (
+//   <Pressable zIndex={999} position="absolute" left={0} right={0} top={0} bottom={0} onPress={()=>{}}>
+//     <Text>HELLO</Text>
+//   </Pressable>
+// );
 
 export const SearchForm = ({
   search,
   navigation,
   onConfirm,
 }: SearchFormProps) => {
-  // Search parameters
+  // Destination
   const [destination, setDestination] = useState(search.destination);
   const onDestinationSelect = (selection: DestinationInputItem) => {
     // console.log("Selected destination: ", selection);
     setDestination(selection.code);
   };
+
+  // Travel dates
   const [travelDates, setTravelDates] = useState<TravelDates>({
     earliest: search.earliestDepartureDate,
     latest: search.latestDepartureDate,
   });
-  const [nightsAtDestination, setNightsAtDestination] = useState<
-    [number, number]
-  >([search.minNightsAtDestination, search.maxNightsAtDestination]);
-  const [maxStopovers, setMaxStopovers] = useState<number>(search.maxStopovers);
 
-  // Travel dates selection
   const [dateSelectMode, setDateSelectMode] =
     useState<keyof TravelDates>("earliest");
 
@@ -75,7 +82,11 @@ export const SearchForm = ({
     setDatePickerVisibile(true);
   };
 
-  // Days at destination selector
+  // Days at destination
+  const [nightsAtDestination, setNightsAtDestination] = useState<
+    [number, number]
+  >([search.minNightsAtDestination, search.maxNightsAtDestination]);
+
   const [isDaysSelectorVisible, setDaysSelectorVisible] = useState(false);
   const hideDaysSelector = () => setDaysSelectorVisible(false);
   const handleSelectedDays = (days: [number, number]) => {
@@ -83,7 +94,8 @@ export const SearchForm = ({
     hideDaysSelector();
   };
 
-  // Max stops selector
+  // Max stops
+  const [maxStopovers, setMaxStopovers] = useState<number>(search.maxStopovers);
   const [isStopsSelectorVisible, setStopsSelectorVisible] = useState(false);
   const hideStopsSelector = () => setStopsSelectorVisible(false);
   const handleSelectedStops = (maxStops: number) => {
@@ -91,14 +103,11 @@ export const SearchForm = ({
     hideStopsSelector();
   };
 
-  // const [showAutocomplete, setShowAutocomplete] = useState(false);
-
   // NOTE: How to refactor?
   useEffect(() => {
-    console.log("HEADER UPDATE");
     navigation.setOptions({
       headerRight: () => (
-        <Button
+        <RNButton
           title="Save"
           onPress={() => {
             const search = {
@@ -126,33 +135,33 @@ export const SearchForm = ({
   ]);
 
   return (
-    <View flex={1}>
+    <>
+    <View flex={1} py="$2" $base-pl="$4" $base-pr="$4" gap="$4">
       <DestinationInput
         currentSelection={destination}
         onSelect={onDestinationSelect}
       />
 
-      {/* <Button title="Open" onPress={() => setShowAutocomplete(true)} />
-      <Autocomplete open={showAutocomplete} setOpen={setShowAutocomplete} /> */}
-
       <View $base-pl="$4" $base-pr="$5" flex={1}>
         <View flex={7}>
-          <Button title="Earliest departure" onPress={selectDepartureDate} />
+          <Button onPress={selectDepartureDate}>
+            <ButtonText>Earliest departure</ButtonText>
+          </Button>
           <Text>{`Selected: ${formattedDate(travelDates.earliest)}`}</Text>
 
-          <Button title="Latest departure" onPress={selectReturnDate} />
+          <Button onPress={selectReturnDate}>
+            <ButtonText>Latest departure</ButtonText>
+          </Button>
           <Text>{`Selected: ${formattedDate(travelDates.latest)}`}</Text>
 
-          <Button
-            title="Days at destination"
-            onPress={() => setDaysSelectorVisible(true)}
-          />
+          <Button onPress={() => setDaysSelectorVisible(true)}>
+            <ButtonText>Days at destination</ButtonText>
+          </Button>
           <Text>{`Days at destination: ${nightsAtDestination[0]} - ${nightsAtDestination[1]}`}</Text>
 
-          <Button
-            title="Max stops"
-            onPress={() => setStopsSelectorVisible(true)}
-          />
+          <Button onPress={() => setStopsSelectorVisible(true)}>
+            <ButtonText>Max stops</ButtonText>
+          </Button>
           <Text>{`Max stops: ${maxStopovers}`}</Text>
 
           <DaysSelector
@@ -177,5 +186,7 @@ export const SearchForm = ({
         </View>
       </View>
     </View>
+    </>
+
   );
 };
