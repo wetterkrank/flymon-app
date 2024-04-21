@@ -1,7 +1,9 @@
+import { useState } from "react";
+import { View, StyleSheet } from "react-native";
 import RadioGroup, { RadioButtonProps } from "react-native-radio-buttons-group";
 
-import { useState } from "react";
-import { Modal, View, StyleSheet, Text, Pressable } from "react-native";
+import Modal from "./Modal/Modal";
+import { CancelButton } from "./Modal/CancelButton";
 
 export type StopsSelectorProps = {
   isVisible: boolean;
@@ -16,7 +18,7 @@ export const StopsSelector = ({
 }: StopsSelectorProps) => {
   const [radioButtons, setRadioButtons] = useState<RadioButtonProps[]>([
     {
-      id: "0", // acts as primary key, should be unique and non-empty string
+      id: "0", // acts as a primary key, should be a unique non-empty string
       label: "Direct",
       value: "0",
     },
@@ -37,74 +39,31 @@ export const StopsSelector = ({
     const selectedRadioButton = radioButtons.find(
       (radioButton) => radioButton.selected
     );
-    const stopsValue = selectedRadioButton?.value || '0';
+    const stopsValue = selectedRadioButton?.value || "0";
     const stopsValueInt = parseInt(stopsValue);
     onConfirm(stopsValueInt);
   };
 
   return (
-    <View style={styles.centeredView}>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isVisible}
-        onRequestClose={() => {
-          onCancel;
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <RadioGroup
-              radioButtons={radioButtons}
-              onPress={onPressRadioButton}
-            />
-          </View>
-        </View>
-      </Modal>
-    </View>
+    <Modal isVisible={isVisible} onBackdropPress={onCancel}>
+      <View style={styles.container}>
+        <RadioGroup radioButtons={radioButtons} onPress={onPressRadioButton} />
+      </View>
+
+      <CancelButton
+        label={"Cancel"}
+        onPress={onCancel}
+      />
+    </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 22,
-  },
-  modalView: {
-    margin: 20,
+  container: {
+    marginBottom: 8,
     backgroundColor: "white",
-    borderRadius: 20,
+    borderRadius: 13,
     padding: 35,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: "#F194FF",
-  },
-  buttonClose: {
-    backgroundColor: "#2196F3",
-  },
-  textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center",
   },
 });

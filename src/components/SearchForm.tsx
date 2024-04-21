@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button as RNButton } from "react-native";
 import DatePickerModal from "react-native-modal-datetime-picker";
 
@@ -7,15 +7,10 @@ import { DaysSelector } from "../components/DaysSelector";
 import { StopsSelector } from "../components/StopsSelector";
 
 import { formattedDate } from "../helpers";
-// import { TAutocompleteDropdownItem } from "react-native-autocomplete-dropdown";
 import { SearchParams } from "../api/subscriptions/types";
-import {
-  Button,
-  ButtonText,
-  View,
-  Text,
-} from "@gluestack-ui/themed";
+import { Button, ButtonText, View, Text } from "@gluestack-ui/themed";
 import { RootStackScreenProps } from "../navigation/types";
+import { SearchContext } from "../contexts/SearchContext";
 
 type TravelDates = {
   earliest: Date;
@@ -40,7 +35,11 @@ export const SearchForm = ({
   onConfirm,
 }: SearchFormProps) => {
   // Destination
-  const [destination, setDestination] = useState(search.destination);
+  const [destination1, setDestination] = useState(search.destination);
+  const searchContext = useContext(SearchContext);
+  const destination = searchContext.search.destination;
+  console.log("Destination: ", destination);
+
   const onDestinationSelect = (selection: DestinationInputItem) => {
     // console.log("Selected destination: ", selection);
     setDestination(selection.code);
@@ -136,57 +135,61 @@ export const SearchForm = ({
 
   return (
     <>
-    <View flex={1} py="$2" $base-pl="$4" $base-pr="$4" gap="$4">
-      <DestinationInput
-        currentSelection={destination}
-        onSelect={onDestinationSelect}
-      />
+      <Button onPress={() => navigation.navigate('Destination')}>
+        <ButtonText>Select D</ButtonText>
+      </Button>
 
-      <View $base-pl="$4" $base-pr="$5" flex={1}>
-        <View flex={7}>
-          <Button onPress={selectDepartureDate}>
-            <ButtonText>Earliest departure</ButtonText>
-          </Button>
-          <Text>{`Selected: ${formattedDate(travelDates.earliest)}`}</Text>
+      <View flex={1} py="$2" $base-pl="$4" $base-pr="$4" gap="$4">
+        <DestinationInput
+          currentSelection={destination}
+          onSelect={onDestinationSelect}
+        />
+        <Text>{`Selected: ${destination}`}</Text>
 
-          <Button onPress={selectReturnDate}>
-            <ButtonText>Latest departure</ButtonText>
-          </Button>
-          <Text>{`Selected: ${formattedDate(travelDates.latest)}`}</Text>
+        <View $base-pl="$4" $base-pr="$5" flex={1}>
+          <View flex={7}>
+            <Button onPress={selectDepartureDate}>
+              <ButtonText>Earliest departure</ButtonText>
+            </Button>
+            <Text>{`Selected: ${formattedDate(travelDates.earliest)}`}</Text>
 
-          <Button onPress={() => setDaysSelectorVisible(true)}>
-            <ButtonText>Days at destination</ButtonText>
-          </Button>
-          <Text>{`Days at destination: ${nightsAtDestination[0]} - ${nightsAtDestination[1]}`}</Text>
+            <Button onPress={selectReturnDate}>
+              <ButtonText>Latest departure</ButtonText>
+            </Button>
+            <Text>{`Selected: ${formattedDate(travelDates.latest)}`}</Text>
 
-          <Button onPress={() => setStopsSelectorVisible(true)}>
-            <ButtonText>Max stops</ButtonText>
-          </Button>
-          <Text>{`Max stops: ${maxStopovers}`}</Text>
+            <Button onPress={() => setDaysSelectorVisible(true)}>
+              <ButtonText>Days at destination</ButtonText>
+            </Button>
+            <Text>{`Days at destination: ${nightsAtDestination[0]} - ${nightsAtDestination[1]}`}</Text>
 
-          <DaysSelector
-            isVisible={isDaysSelectorVisible}
-            values={nightsAtDestination}
-            onConfirm={handleSelectedDays}
-            onCancel={hideDaysSelector}
-          />
+            <Button onPress={() => setStopsSelectorVisible(true)}>
+              <ButtonText>Max stops</ButtonText>
+            </Button>
+            <Text>{`Max stops: ${maxStopovers}`}</Text>
 
-          <StopsSelector
-            isVisible={isStopsSelectorVisible}
-            onConfirm={handleSelectedStops}
-            onCancel={hideStopsSelector}
-          />
+            <DaysSelector
+              isVisible={isDaysSelectorVisible}
+              values={nightsAtDestination}
+              onConfirm={handleSelectedDays}
+              onCancel={hideDaysSelector}
+            />
 
-          <DatePickerModal
-            isVisible={isDatePickerVisible}
-            mode="date"
-            onConfirm={handleSelectedDate}
-            onCancel={hideDatePicker}
-          />
+            <StopsSelector
+              isVisible={isStopsSelectorVisible}
+              onConfirm={handleSelectedStops}
+              onCancel={hideStopsSelector}
+            />
+
+            <DatePickerModal
+              isVisible={isDatePickerVisible}
+              mode="date"
+              onConfirm={handleSelectedDate}
+              onCancel={hideDatePicker}
+            />
+          </View>
         </View>
       </View>
-    </View>
     </>
-
   );
 };

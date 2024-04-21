@@ -100,8 +100,7 @@ export default function EditSubscriptionScreen({
     if (isLoading) return Spinner();
     else return <Text>Error: {error.message}</Text>;
   }
-  const subscription =
-    subscriptions.find((s) => s.id === subscriptionId) || defaultSubscription();
+  const subscription = subscriptions.find((s) => s.id === subscriptionId) || defaultSubscription();
 
   const searchParams = searchParamsSchema.parse(subscription.search); // only esssential data
 

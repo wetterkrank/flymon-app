@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import * as Notifications from "expo-notifications";
 import { GluestackUIProvider } from "@gluestack-ui/themed";
 import { config } from "@gluestack-ui/config"; // Optional if you want to use default theme
-import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
+import { AutocompleteDropdownContextProvider } from "react-native-autocomplete-dropdown";
 
 import { LocationsContext, LocationsData } from "./src/services/locations";
 import airportsData from "./src/services/locations/airports.json";
 import citiesData from "./src/services/locations/cities.json";
 import Navigation from "./src/navigation";
+import { SearchContext, SearchParams, defaultSearch } from "./src/contexts/SearchContext";
 
 export default function App() {
   Notifications.setNotificationHandler({
@@ -36,12 +37,16 @@ export default function App() {
     setLocationsData({ airports, cities });
   }, []);
 
+  const [search, setSearch] = useState<SearchParams>(defaultSearch());
+
   return (
     <GluestackUIProvider config={config}>
       <LocationsContext.Provider value={locationsData}>
-        <AutocompleteDropdownContextProvider>
-          <Navigation />
-        </AutocompleteDropdownContextProvider>
+        <SearchContext.Provider value={{search: search, setSearch: setSearch}}>
+          <AutocompleteDropdownContextProvider>
+            <Navigation />
+          </AutocompleteDropdownContextProvider>
+        </SearchContext.Provider>
       </LocationsContext.Provider>
     </GluestackUIProvider>
   );

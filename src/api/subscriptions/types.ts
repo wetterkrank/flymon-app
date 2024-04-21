@@ -49,5 +49,5 @@ export type SearchParams = z.infer<typeof searchParamsSchema>;
 export type Search = z.infer<typeof searchSchema>;
 
 export type NewSubscription = z.infer<typeof subscriptionParamsSchema>;
-export type Subscription = z.infer<typeof subscriptionSchema>;
+export type Subscription = z.infer<typeof subscriptionSchema>; // NewSubscription with ID
 export type Subscriptions = z.infer<typeof subscriptionListSchema>;
